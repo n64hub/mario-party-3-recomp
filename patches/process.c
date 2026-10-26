@@ -27,6 +27,7 @@ s32 recomp_prc_resume(Process* process, jmp_buf* jump);
 void recomp_prc_yield(void);
 void recomp_prc_exit(void);
 void recomp_prc_reset(process_func end);
+void survey_tick(void);
 
 // What a process's setjmp-then-longjmp to the scheduler was: back to the scheduler until it resumes this process,
 // then on into HuPrcExit if the process was killed meanwhile.
@@ -78,6 +79,9 @@ RECOMP_PATCH void HuPrcSleep(s32 time) {
 RECOMP_PATCH void HuPrcCall(s32 time) {
     Process* cur_proc_local;
     s32 ret;
+
+    // @recomp A script's survey (patches/survey.c).
+    survey_tick();
 
     current_process = top_process;
     // @recomp setjmp(&process_jmp_buf), which returns 0 here and what the process longjmped with after each one.

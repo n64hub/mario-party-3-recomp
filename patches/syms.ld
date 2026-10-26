@@ -9,3 +9,4 @@ recomp_prc_resume = 0x8F00000C;
 recomp_prc_yield = 0x8F000010;
 recomp_prc_exit = 0x8F000014;
 recomp_prc_reset = 0x8F000018;
+recomp_survey_register = 0x8F00001C;

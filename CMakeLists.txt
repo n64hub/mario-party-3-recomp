@@ -188,6 +188,7 @@ target_sources(MarioParty3Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/game/libultra.cpp
     ${CMAKE_SOURCE_DIR}/src/game/process_threads.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/survey.cpp
 )
 if (MP_PATCHES)
     target_sources(MarioParty3Recompiled PRIVATE ${CMAKE_SOURCE_DIR}/src/main/register_patches.cpp)
