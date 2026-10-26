@@ -1,0 +1,24 @@
+# N64Recomp's configuration for Mario Party (USA), SHA-1 1159bd56730094bfc71be30113e1cfc8bacf34f3: it reads the game's
+# code out of the ROM by the symbols tools/gen_syms.sh dumps from the decomp's ELF, and writes RecompiledFuncs/
+# (tools/recompile.sh). The code is stored raw in the ROM: main after the boot code, and each of the 131 overlays
+# (minigames, boards, menus) where marioparty3.yaml has it, so there is nothing to decompress first.
+[input]
+# The decomp's entrypoint (asm/entrypoint.s), the ROM header's.
+entrypoint = 0x80000400
+# Paths are relative to this file.
+symbols_file_path = "syms/marioparty3.us.syms.toml"
+rom_file_path = "roms/marioparty3.us.z64"
+output_func_path = "RecompiledFuncs"
+use_absolute_symbols = true
+
+[patches]
+# Functions recompiled as empty ones.
+stubs = [
+    # libleo's boot of a 64DD disk game, which the game links in and reaches only with a 64DD attached, which the
+    # runtime never reports: it writes to its stack at an offset N64Recomp can't analyze.
+    "__LeoBootGame2",
+]
+# Functions written as <name>_recomp: their names are a system library's too (PlaySound is Windows' winmm's).
+renamed = [
+    "PlaySound",
+]

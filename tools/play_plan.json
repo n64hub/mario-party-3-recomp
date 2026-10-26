@@ -1,0 +1,104 @@
+{
+ "header": [
+  "The page's plan for N64Recomp-browser's tools/play_page.mjs, its regular play of 2-3 minutes: the launcher, Load ROM",
+  "on a new profile, Start Game, then Start (Enter) through the logos, the opening and the title into Mushroom Village,",
+  "and A (Space) through Toad's messages and the warp pipe into the first board, as a player does on a new save. That is",
+  "the board Toad teaches the rules on (overlay 0x3E), which four computer players play with the board engine: dice,",
+  "spaces, a minigame's pick. Which screen is up is the overlay omOvlGotoEx last went to (0x800F09F4), the boards 0x36",
+  "(DK's Jungle Adventure) to 0x3E; a need fails the run unless the game is on a board. The page has no prebuilt shader",
+  "list yet, so its first minutes stutter as RT64 builds each pipeline."
+ ],
+ "page": "MarioParty3Recompiled.html",
+ "load": [
+  [
+   "wait",
+   8000
+  ]
+ ],
+ "setup": [
+  [
+   "rom",
+   627,
+   364
+  ],
+  [
+   "wait",
+   3000
+  ]
+ ],
+ "start": [
+  [
+   "click",
+   627,
+   364
+  ],
+  [
+   "wait",
+   15000
+  ],
+  [
+   "shot",
+   "opening.png"
+  ],
+  [
+   "pressUntil",
+   "Enter",
+   "Enter",
+   13,
+   150,
+   2500,
+   "n64r(0x800F09F4) === 0x69",
+   90000
+  ],
+  [
+   "wait",
+   4000
+  ],
+  [
+   "shot",
+   "village.png"
+  ]
+ ],
+ "play": [
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   1500,
+   "(o => o >= 0x36 && o <= 0x3E)(n64r(0x800F09F4))",
+   120000
+  ],
+  [
+   "need",
+   "(o => o >= 0x36 && o <= 0x3E)(n64r(0x800F09F4))"
+  ],
+  [
+   "wait",
+   10000
+  ],
+  [
+   "shot",
+   "board_start.png"
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   2000,
+   "false",
+   45000
+  ],
+  [
+   "shot",
+   "board.png"
+  ],
+  [
+   "need",
+   "(o => o >= 0x36 && o <= 0x3E)(n64r(0x800F09F4))"
+  ]
+ ]
+}
