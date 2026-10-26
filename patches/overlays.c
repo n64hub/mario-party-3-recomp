@@ -36,8 +36,9 @@ RECOMP_PATCH void func_8000B1A0_main(s32 arg0, u8 sectionFlags) {
     textStart = _modeovltbl[arg0].vramStart;
 
     if (sectionFlags & HAS_TEXT_SECTION) {
-        // @recomp Register the code this brings in.
-        recomp_load_overlays(romStart, textStart, textVramEnd - textVramStart);
+        // @recomp Register the code this brings in. The runtime takes a section only when the range it is told about
+        // holds all of it, and the decomp's section is the whole overlay (text, data and rodata), so the range is.
+        recomp_load_overlays(romStart, textStart, _modeovltbl[arg0].romEnd - romStart);
         dmaReadOvl(romStart, textStart, textVramEnd - textVramStart);
     }
     if (sectionFlags & HAS_DATA_SECTION) {
