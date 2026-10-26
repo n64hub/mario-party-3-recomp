@@ -20,7 +20,6 @@ void UnlinkProcess_0004F7C8(Process** root, Process* process);
 extern Process* top_process;
 extern Process* current_process;
 extern s16 process_count;
-// Where the process the scheduler goes to next last slept, for the game's debug display.
 extern u32 sPrcSleepLoc;
 
 // The natives (src/game/process_threads.cpp).
@@ -99,9 +98,8 @@ RECOMP_PATCH void HuPrcCall(s32 time) {
             break;
         }
 
-        // The word above the stack pointer the process's setjmp saved, which is its caller's return address on a
-        // console. Here the jmp_buf keeps the sp the process started with, so it is a word of the process's heap, which
-        // only the game's debug display reads.
+        // Where the process last slept, as a word its setjmp left on its stack, kept for a debugger: nothing in the
+        // game reads it. Here the jmp_buf keeps the sp the process started with, so it is a word of the process's heap.
         sPrcSleepLoc = current_process->prc_jump.sp[10];
 
         if ((cur_proc_local->stat & 0x1)) {

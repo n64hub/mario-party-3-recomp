@@ -7,10 +7,11 @@
 #include "recomp.h"
 
 namespace {
-    // A function only hardware the runtime never reports reaches: the 64DD (patches/leo.c tells the game there is
-    // none), or a Controller Pak's own banks after osPfsIsPlug said no pak is plugged in.
+    // A function only hardware the runtime never reports reaches: the 64DD, a Controller Pak's own banks after
+    // osPfsIsPlug said no pak is plugged in, or a development board's debugger (the KMC and MSP debuggers' printf,
+    // which libultra's osInitialize installs only when it finds one, and the runtime's never does).
     [[noreturn]] void unreachable(const char* name) {
-        fprintf(stderr, "%s: called, which only a 64DD or a Controller Pak reaches\n", name);
+        fprintf(stderr, "%s: called, which only a 64DD, a Controller Pak or a debugger reaches\n", name);
         std::abort();
     }
 }
@@ -37,6 +38,10 @@ extern "C" void __osContRamRead_recomp(uint8_t* rdram, recomp_context* ctx) {
 
 extern "C" void __osContRamWrite_recomp(uint8_t* rdram, recomp_context* ctx) {
     unreachable("__osContRamWrite");
+}
+
+extern "C" void osPiReadIo_recomp(uint8_t* rdram, recomp_context* ctx) {
+    unreachable("osPiReadIo");
 }
 
 extern "C" void osEPiWriteIo_recomp(uint8_t* rdram, recomp_context* ctx) {

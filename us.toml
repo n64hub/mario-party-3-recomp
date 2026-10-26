@@ -24,6 +24,12 @@ stubs = [
     "func_80071B50_main",
     "func_80071C8C_main",
 ]
-# Functions written as <name>_recomp: their names are a system library's too.
+# Functions written as <name>_recomp: their names are the C library's too (the game's libm, lib/marioparty3's
+# src/libm, which N64Recomp recompiles rather than leaves out, as it does sinf, sqrt and the rest).
 renamed = [
+    "atan2",
+    "exp",
+    "expf",
+    "log",
+    "logf",
 ]
