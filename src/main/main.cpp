@@ -291,13 +291,13 @@ void reset_audio(uint32_t output_freq) {
     update_audio_converter();
 }
 
-// The audio microcode, recompiled by RSPRecomp from aspMain.us.toml (tools/recompile.sh). Graphics tasks go to RT64.
-extern RspUcodeFunc aspMain_run;
+// The audio microcode, n_aspMain, recompiled by RSPRecomp from n_aspMain.us.toml (tools/recompile.sh). Graphics tasks go to RT64.
+extern RspUcodeFunc n_aspMain_run;
 
 RspUcodeFunc* get_rsp_microcode(const OSTask* task) {
     switch (task->t.type) {
     case M_AUDTASK:
-        return aspMain_run;
+        return n_aspMain_run;
     default:
         fprintf(stderr, "Unknown task: %" PRIu32 "\n", task->t.type);
         return nullptr;
@@ -309,14 +309,14 @@ gpr get_entrypoint_address();
 
 std::vector<recomp::GameEntry> supported_games = {
     {
-        // XXH3 of Mario Party (USA), SHA-1 1159bd56730094bfc71be30113e1cfc8bacf34f3. Its code is stored uncompressed.
-        .rom_hash = 0x19f905a0cbc9fe8fULL,
-        .internal_name = "MarioParty",
-        .display_name = "Mario Party",
-        .game_id = u8"marioparty.n64.us.1.0",
-        .mod_game_id = "marioparty",
-        // 4 Kbit of EEPROM (the decomp's src/eeprom.c).
-        .save_type = recomp::SaveType::Eep4k,
+        // XXH3 of Mario Party 3 (USA), SHA-1 6beb80ff822b96bcf85dcdb512e8b2b7969d8259. Its code is stored uncompressed.
+        .rom_hash = 0x39f865d6ec68e629ULL,
+        .internal_name = "MarioParty3",
+        .display_name = "Mario Party 3",
+        .game_id = u8"marioparty3.n64.us.1.0",
+        .mod_game_id = "marioparty3",
+        // 16 Kbit of EEPROM (the decomp's src/eeprom.c).
+        .save_type = recomp::SaveType::Eep16k,
         .thumbnail_bytes = std::span<const char>(icon_bytes),
         .is_enabled = true,
         .entrypoint_address = get_entrypoint_address(),
@@ -324,7 +324,8 @@ std::vector<recomp::GameEntry> supported_games = {
     },
 };
 
-// The game's threads (the decomp's src/1060.c, src/48D90.c, src/engine/graphics.c, src/engine/siman.c) and libultra's
+// The game's threads (the decomp's src/1060.c, src/graphics.c, src/siman.c, the audio's in each overlay that plays its
+// own, e.g. ovl_80_shared_board) and libultra's
 // managers.
 static std::string game_thread_name(const OSThread* t) {
     std::string name = "[Game] ";
@@ -491,7 +492,7 @@ int main(int argc, char** argv) {
         .get_rsp_microcode = get_rsp_microcode,
     };
 
-    // Presented at the VI, not early: the game draws each frame in several RSP tasks (src/engine/graphics.c's swap chain:
+    // Presented at the VI, not early: the game draws each frame in several RSP tasks (src/graphics.c's swap chain:
     // the ground, then the shadows, the characters and the text), and RT64's early present shows a framebuffer as soon
     // as any of them ends, so the screen flickers between parts of a frame.
     ultramodern::renderer::callbacks_t renderer_callbacks{

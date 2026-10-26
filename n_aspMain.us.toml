@@ -1,0 +1,24 @@
+# RSPRecomp's configuration for Mario Party 3 (USA)'s audio microcode, n_aspMain (libultra's n_audio). Graphics tasks
+# go to RT64; the audio tasks the game sends need this microcode recompiled to run (src/main/main.cpp,
+# get_rsp_microcode). tools/recompile.sh writes it into RecompiledFuncs/.
+#
+# - The text is the start of n_aspMain_code, which the decomp keeps as a binary at ROM 0x960C0 (marioparty3.yaml), up
+#   to where its last command handler ends; text_address is the IMEM address its first byte runs at, 0x04001080, after
+#   rspboot. The size and address are Rainchus's MarioParty3-Recomp's (GPL-3.0), checked against the command table.
+# - The command handlers are reached through that table, which RSPRecomp can't find by following the instructions, so
+#   they are listed below: the halfwords at the start of n_aspMain_data (ROM 0xA6C50), the two empty commands left out
+#   and 0x02B0 as the IMEM address 0x12B0 it is (RSP jumps keep the low 12 bits).
+
+rom_file_path = "roms/marioparty3.us.z64"
+text_offset = 0x960C0
+text_size = 0xC60
+text_address = 0x04001080
+
+# C++, not C: the output includes librecomp's RSP header. CMakeLists.txt builds RecompiledFuncs/*.cpp with the game.
+output_file_path = "RecompiledFuncs/n_aspMain_rsp.cpp"
+output_function_name = "n_aspMain_run"
+
+extra_indirect_branch_targets = [
+    0x10EC, 0x139C, 0x119C, 0x1A64, 0x11C8, 0x17EC, 0x1208,
+    0x127C, 0x1348, 0x1248, 0x1C84, 0x12D4, 0x12B0, 0x1384,
+]

@@ -84,7 +84,7 @@ endif()
 
 target_include_directories(rt64 PRIVATE ${CMAKE_BINARY_DIR}/rt64/src)
 
-# RecompiledFuncs: the game's code, from N64Recomp us.toml, and its audio microcode, from RSPRecomp aspMain.us.toml
+# RecompiledFuncs: the game's code, from N64Recomp us.toml, and its audio microcode, from RSPRecomp n_aspMain.us.toml
 # (tools/recompile.sh)
 add_library(RecompiledFuncs STATIC)
 

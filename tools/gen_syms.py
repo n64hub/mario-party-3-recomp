@@ -21,6 +21,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 # The decomp's entrypoint (asm/entrypoint.s), the ROM header's: the boot code copies 1 MB from ROM 0x1000 there.
 ENTRYPOINT = 0x80000400
+# Sizes for symbols the decomp gives none, so that each is a function us.toml can stub: libleo's scrambled boot of a
+# 64DD disk game (src/72750.c), which func_80071B50_main decodes and calls. As a symbol of no size it is left out of the
+# dump, found as the target of that call and analyzed as a static, and its bytes aren't code until they are decoded.
+FUNCTION_SIZES = 'function_sizes = [ { name = "func_80071C8C_main", size = 0x344 } ]'
 
 
 def elf_sections(path):
@@ -55,7 +59,8 @@ def main():
             f'elf_path = "{elf.as_posix()}"\n'
             'output_func_path = "out"\n'
             # The decomp's bss sections are named <segment>_bss (splat's marioparty3.ld).
-            'bss_section_suffix = "_bss"\n')
+            'bss_section_suffix = "_bss"\n'
+            f"{FUNCTION_SIZES}\n")
         run = subprocess.run([str(n64recomp), config.name, "--dump-context"], cwd=tmp, capture_output=True, text=True)
         if run.returncode != 0:
             sys.exit((run.stdout + run.stderr)[-3000:])
