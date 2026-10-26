@@ -66,6 +66,39 @@ Built with `-DMP_PROCESS_STATS=ON`, the program prints every 5 seconds how many 
 it has made, how many resumes a second the scheduler makes and what each costs beyond the process's own run (the two
 handoffs, from the scheduler's thread to the process's and back).
 
+On the desktop, from the title to a Battle Royale on Chilly Waters and its first turns, A pressed through it, on a busy
+host (a page played beside it):
+- The title, the file select and the mode select keep 3 to 7 processes alive, with 150 to 210 resumes a second.
+- A party's setup and the board's opening keep 10 to 17 alive, with 300 to 490 resumes a second.
+- The board keeps 19 to 26 alive, with 570 to 650 resumes a second, about 20 a frame at the game's 30. 26 threads are
+  made in all.
+
+Each resume costs 10 to 30 us beyond the process, which on the board is 10 to 16 ms a second, about 1.5% of a core.
+A few 5-second stretches cost more (to 150 us a resume) as the host's other work took the cores. Mario Party:
+Recompiled's docs/processes.md has the same code's costs on an idle host and in Chrome.
+
+## From Mario Party
+
+The scheduler's code is Mario Party: Recompiled's (n64hub/mario-party-recomp), where its docs/processes.md says what a
+second game on the engine takes:
+
+- `src/game/process_threads.cpp` as it is, byte for byte. A change to it is made there too.
+- `patches/process.c`, the same five patches with Mario Party 3's names: `HuPrcSysInit`, `HuPrcChildWait`, `HuPrcExit`
+  for Mario Party's `HuPrcInit`, `HuPrcChildWatch` and `HuPrcEnd`, the list's `top_process`, `current_process` and
+  `process_count`, and `HuMemMemoryFreePerm` for the heap a process leaves. `UnlinkProcess` is static, so N64Recomp
+  names it by its ROM address (`UnlinkProcess_0004F7C8`), and `HuPrcCall` also stores `sPrcSleepLoc` (where the
+  process last slept, for a debugger) as the game does.
+- The five natives' lines in `patches/syms.ld`.
+
+Not the scheduler's, but the same engine's: its swap chain (src/graphics.c) draws each frame in several RSP tasks, so
+the game presents at the VI (`src/main/main.cpp`), as Mario Party does.
+
+## How much it costs
+
+Built with `-DMP_PROCESS_STATS=ON`, the program prints every 5 seconds how many processes are alive, how many threads
+it has made, how many resumes a second the scheduler makes and what each costs beyond the process's own run (the two
+handoffs, from the scheduler's thread to the process's and back).
+
 On the rules board Toad shows a new adventure on, which four computer players play with the board engine, a board
 keeps 15 to 18 processes alive, and the scheduler makes about 450 resumes a second, 15 a frame at the game's 30. The
 title screens keep the most alive: up to 29, with about 900 resumes a second. 30 threads are made in all.
