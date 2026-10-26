@@ -1,12 +1,13 @@
 {
  "header": [
   "The page's plan for N64Recomp-browser's tools/play_page.mjs, its regular play of 2-3 minutes: the launcher, Load ROM",
-  "on a new profile, Start Game, then Start (Enter) through the logos, the opening and the title into Mushroom Village,",
-  "and A (Space) through Toad's messages and the warp pipe into the first board, as a player does on a new save. That is",
-  "the board Toad teaches the rules on (overlay 0x3E), which four computer players play with the board engine: dice,",
-  "spaces, a minigame's pick. Which screen is up is the overlay omOvlGotoEx last went to (0x800F09F4), the boards 0x36",
-  "(DK's Jungle Adventure) to 0x3E; a need fails the run unless the game is on a board. The page has no prebuilt shader",
-  "list yet, so its first minutes stutter as RT64 builds each pipeline."
+  "on a new profile, Start Game, then Start (Enter) through the logos and the title to the file select, A (Space) on a",
+  "new file into the mode select, the stick left (A) onto its Battle Royale star, and A through the rules question and",
+  "the party's setup onto that map's first board, Chilly Waters, where A rolls the dice for player 1 and the computer",
+  "plays the other three. Which screen is up is the overlay omOvlGotoEx last went to, omovl (0x800CE200): the file",
+  "select 0x79, the mode select 0x77, the setup 0x78, the boards 0x48 (Chilly Waters) to 0x4E. The hub takes the stick",
+  "only while it shows what the glove points at, as its first message does; a need fails the run unless the game is on",
+  "a board."
  ],
  "page": "MarioParty3Recompiled.html",
  "load": [
@@ -47,16 +48,63 @@
    13,
    150,
    2500,
-   "n64r(0x800F09F4) === 0x69",
+   "n64r(0x800CE200) === 0x79",
    90000
   ],
   [
    "wait",
-   4000
+   3000
   ],
   [
    "shot",
-   "village.png"
+   "filesel.png"
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   2500,
+   "n64r(0x800CE200) === 0x77",
+   60000
+  ],
+  [
+   "wait",
+   6000
+  ],
+  [
+   "shot",
+   "modesel.png"
+  ],
+  [
+   "hold",
+   "KeyA",
+   "a",
+   65,
+   400
+  ],
+  [
+   "wait",
+   1500
+  ],
+  [
+   "shot",
+   "battle_royale.png"
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   2500,
+   "n64r(0x800CE200) === 0x78",
+   30000
+  ],
+  [
+   "need",
+   "n64r(0x800CE200) === 0x78"
   ]
  ],
  "play": [
@@ -67,12 +115,12 @@
    32,
    150,
    1500,
-   "(o => o >= 0x36 && o <= 0x3E)(n64r(0x800F09F4))",
-   120000
+   "(o => o >= 0x48 && o <= 0x4E)(n64r(0x800CE200))",
+   90000
   ],
   [
    "need",
-   "(o => o >= 0x36 && o <= 0x3E)(n64r(0x800F09F4))"
+   "(o => o >= 0x48 && o <= 0x4E)(n64r(0x800CE200))"
   ],
   [
    "wait",
@@ -98,7 +146,7 @@
   ],
   [
    "need",
-   "(o => o >= 0x36 && o <= 0x3E)(n64r(0x800F09F4))"
+   "(o => o >= 0x48 && o <= 0x4E)(n64r(0x800CE200))"
   ]
  ]
 }
