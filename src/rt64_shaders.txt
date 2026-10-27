@@ -13,8 +13,9 @@
 # tools/survey.js) takes the setup's way to the first board to the first minigame instead, and each minigame's end to
 # the next, with the teams its kind has (1 vs 3, 2 vs 2, 4 players, one player) and four computer players, who play
 # each to its end but the last, Dizzy Dinghies, which they don't finish in the three minutes it is played. Not
-# recorded: the Duel Map and its boards, Story mode, the Mini-Game House, the options and the records. Flags follow
-# settings (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means recording again.
+# recorded: the Duel Map and its boards, Story mode, the Mini-Game House, the options and the records. One shader is
+# added by hand to section 0: a board's start missed it in plays from a 3840x2000 canvas. Flags follow settings
+# (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means recording again.
 0c087009 00008cff fcffffff fffcf279 04cb540b
 005041c9 00000cff fcffffff fffdf6fb 0800000b
 005041c8 00000cff fcffffff fffdf6fb 0800000b
@@ -67,6 +68,7 @@
 005041c9 00000cbf fcffffff fffdf6fb 0800000b
 00504a51 00082c3f fcff97ff ff2dfeff 0ccb540c
 005041c9 00000c3f fcffffff fffdf6fb 0800000b
+005041c9 00000c3f fcffb3ff ff65feff 008a000b
 section chilly
 00504f50 00082c3f fc30fe61 44fe7339 088a000c
 00552078 00082c3f fc327e64 fffffdfe 0800000c
