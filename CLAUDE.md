@@ -9,21 +9,22 @@ needs: the rules, where things are, and the facts about the game the code can't 
 This repo is the game: its recompilation, the patches over it, the desktop build and its web page.
 
 - `syms/`: the symbols N64Recomp reads, generated (never edited by hand) by `tools/build_decomp.sh` then
-  `tools/gen_syms.sh` (`tools/gen_syms.py` says how).
+  `tools/gen_syms.sh` (`lib/mario-party-engine/tools/gen_syms.py` says how).
 - `us.toml`: N64Recomp's configuration; `tools/recompile.sh` writes `RecompiledFuncs/` with it, and the audio
   microcode with `n_aspMain.us.toml`.
 - `patches/` and `patches.toml`: MIPS C against `lib/marioparty3`'s headers, recompiled into PatchesLib. Its
   `ui_funcs.h`, `patch_helpers.h` and `recompui_event_structs.h` are RecompFrontend's, which includes the first from
   the game's `patches/`.
 - `src/`: RecompFrontend's main (`src/main/main.cpp`, with the GameEntry), the natives the patches call
-  (`src/game/recomp_api.cpp`, and the process scheduler's in `src/game/process_threads.cpp`), the libultra functions
-  the runtime lacks (`src/game/libultra.cpp`) and the settings.
-- `lib/`: `marioparty3` (the decomp, for the symbols and the patches' headers), upstream `rt64`, `N64ModernRuntime` and
+  (`src/game/recomp_api.cpp`; the process scheduler's are `lib/mario-party-engine`'s), the libultra functions the
+  runtime lacks (`src/game/libultra.cpp`) and the settings.
+- `lib/`: `marioparty3` (the decomp, for the symbols and the patches' headers), `mario-party-engine` (the code the
+  Mario Party recomps share, below), upstream `rt64`, `N64ModernRuntime` and
   `RecompFrontend` at the commits N64Recomp-browser's web forks are built on, and `N64Recomp-browser` at a release
   tag. The web support every recomp's page shares is developed and documented there; `tools/build_n64recomp.sh` and
   `CMakeLists.txt` apply its `patches/` to the other three.
-- `docs/processes.md`: the engine's process scheduler, how it runs on threads here and what a game on the same engine
-  reuses. `docs/web.md`: the web page.
+- `docs/processes.md`: what is this game's in the engine's process scheduler, whose code and how it runs on threads
+  are `lib/mario-party-engine`'s. `docs/web.md`: the web page.
 - Comments beside the code, for how and why: each file's header. Read the header of the file you change and update
   it in the same commit.
 
@@ -36,8 +37,10 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - The scope is the game as it plays, plus what a web page needs (RT64 interpolation to the display's rate, resolution
   Auto), plus modern enhancements: each an option with an Original value that plays as the console does, none
   changing how the game plays. USA only.
-- The process scheduler stays game-agnostic (`docs/processes.md`): `src/game/process_threads.cpp` is Mario Party:
-  Recompiled's as it is, and a change to it is made there too.
+- The code the Mario Party recomps share is `lib/mario-party-engine` (n64hub/mario-party-engine): the process
+  scheduler's patches and natives and `gen_syms.py`, written once against this game's names in
+  `patches/engine_names.h`. A change to it is a commit there that each game's submodule moves onto, and code this game
+  would copy from another Mario Party recomp goes there instead.
 - Write for a stranger, in the present tense: nothing about a contributor's machine, servers, paths or accounts, and
   nothing about where anyone keeps ROMs.
 - GPL-3.0, as the recompilations it follows.
@@ -55,7 +58,7 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **The game's threads.** The main thread (id 3) runs the scheduler once a frame; graphics (0x10), the controllers
   (0x14) and audio (0x64, 0x65, started by each overlay that plays its own) have threads of their own.
 - **No 64DD.** libleo's boot of a disk game is linked in and reached only with a 64DD attached; `us.toml` stubs it
-  (its code is stored scrambled, and `tools/gen_syms.py` sizes it so that it can be), and `src/game/libultra.cpp`
+  (its code is stored scrambled, and `tools/gen_syms.sh` sizes it so that it can be), and `src/game/libultra.cpp`
   has the libultra functions N64Recomp leaves out that only a 64DD or a Controller Pak reaches.
 - **The C library's names.** The game links its own libm (`atan2`, `exp`, `log` and their float forms), which
   `us.toml` renames, since a recompiled function by those names would clash with the C library's.

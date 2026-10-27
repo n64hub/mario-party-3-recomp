@@ -13,3 +13,6 @@
 [submodule "lib/N64Recomp-browser"]
 	path = lib/N64Recomp-browser
 	url = https://github.com/n64hub/N64Recomp-browser
+[submodule "lib/mario-party-engine"]
+	path = lib/mario-party-engine
+	url = https://github.com/n64hub/mario-party-engine
