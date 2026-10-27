@@ -24,7 +24,7 @@ On Linux with Docker, with the ROM at `roms/marioparty3.us.z64`:
 tools/build_web.sh                  # [cpus] [cmake arguments]
 ```
 
-It builds `build/web/MarioParty3Recompiled.html` with its `.js`, `.wasm` (about 25 MB) and `.data` (about 9 MB: the
+It builds `build/web/MarioParty3Recompiled.html` with its `.js`, `.wasm` (about 24 MB) and `.data` (about 9 MB: the
 recomp's fonts and menus, nothing of the game) in `tools/docker/Dockerfile.web`, the image every N64Recomp-browser page
 is built in, with ccache in `build/ccache-web`. The script's header says each step. The patches library (`patches/`,
 built for MIPS) is recompiled by the native N64Recomp that `tools/recompile.sh` builds, not the runtime's, which
@@ -58,6 +58,7 @@ without that the next one can't load.
 `tools/play_plan.json` reaches a board as a player does, by the keyboard's defaults (Enter is Start, Space A): Start
 through the logos and the title to the file select, A on a new file into the mode select, the stick onto the Battle
 Royale star, and A through the party's setup onto Chilly Waters, where A rolls the dice for player 1 and the computer
-plays the other three. Which screen is up is the overlay `omOvlGotoEx` last went to, `omovl`, a word at 0x800CE200: the
-file select is 0x79, the mode select 0x77, the setup 0x78, the boards 0x48 (Chilly Waters) to 0x4D (Waluigi's Island),
-a minigame's instructions 0x70 and the minigames 0x01 to 0x46. The plan's header says each step.
+plays the other three until the turn ends and the game leaves for its minigame. Which screen is up is the overlay
+`omOvlGotoEx` last went to, `omovl`, a word at 0x800CE200: the file select is 0x79, the mode select 0x77, the setup
+0x78, the boards 0x48 (Chilly Waters) to 0x4D (Waluigi's Island), a minigame's instructions 0x70 and the minigames
+0x01 to 0x46. The plan's header says each step.

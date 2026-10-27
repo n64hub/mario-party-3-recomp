@@ -8,8 +8,10 @@
   "last went to, omovl (0x800CE200): the file select 0x79, the mode select 0x77, the setup 0x78, the boards 0x48 (Chilly",
   "Waters) to 0x4E. The mode select's glove is a word of its own at 0x8010F730, 0 until the greeting ends, then the",
   "glove's x: 0xAC on the middle star, 0x90 on the Battle Royale star. The stick moves it only while the hub shows what",
-  "it points at, as it does once the greeting ends; A on the middle star talks instead. A need fails the run unless the",
-  "game is on a board."
+  "it points at, as it does once the greeting ends; A on the middle star talks instead. On the board, A plays through",
+  "its opening (0x53) and the turn until the game leaves for the turn's minigame: its instructions are 0x70, the",
+  "minigames 0x01 to 0x46. A need fails the run unless the game is on a board, its opening, a minigame's instructions",
+  "or in a minigame."
  ],
  "page": "MarioParty3Recompiled.html",
  "load": [
@@ -144,16 +146,24 @@
    32,
    150,
    2000,
-   "false",
-   45000
+   "(o => o === 0x70 || (o >= 0x01 && o <= 0x46))(n64r(0x800CE200))",
+   60000
+  ],
+  [
+   "wait",
+   8000
   ],
   [
    "shot",
    "board.png"
   ],
   [
+   "eval",
+   "'overlay 0x' + n64r(0x800CE200).toString(16)"
+  ],
+  [
    "need",
-   "(o => o >= 0x48 && o <= 0x4E)(n64r(0x800CE200))"
+   "(o => (o >= 0x01 && o <= 0x4E) || o === 0x53 || o === 0x70)(n64r(0x800CE200))"
   ]
  ]
 }
