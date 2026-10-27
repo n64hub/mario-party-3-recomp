@@ -134,10 +134,6 @@
    "(o => o === 0x47 || o === 0x53 || (o >= 0x48 && o <= 0x4E))(n64r(0x800CE200))"
   ],
   [
-   "shot",
-   "board_opening.png"
-  ],
-  [
    "pressUntil",
    "Space",
    " ",
