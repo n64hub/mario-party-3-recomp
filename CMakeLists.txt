@@ -71,6 +71,11 @@ endif()
 include(${CMAKE_SOURCE_DIR}/lib/N64Recomp-browser/patches/apply.cmake)
 n64recomp_browser_apply_patches(${CMAKE_SOURCE_DIR}/lib)
 
+# The engine draws a frame in several RSP tasks (one a camera, the board's sprites and text in a later one), which RT64
+# interpolates as one game frame with RT64_GAME_FRAME_WORKLOADS, on with Emscripten and here on the desktop too: each
+# task interpolated as a frame of its own drew frames between the game's from the first tasks alone, without the HUD or
+# a text box, which flickered.
+set(RT64_GAME_FRAME_WORKLOADS ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)

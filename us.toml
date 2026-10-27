@@ -39,3 +39,19 @@ renamed = [
 func = "omOvlGotoEx"
 before_vram = 0x80048228
 text = "{ void mp_survey_goto(uint8_t*, gpr*, gpr*, gpr*); mp_survey_goto(rdram, &ctx->r4, &ctx->r5, &ctx->r6); }"
+
+# The scissor pfDrawFonts sets for the text it draws, and leaves set for what is drawn after it, reaches row 339 of a
+# 240-line picture: (0, 0, 319, 339) in place of (0, 0, 319, 240). A board's objects that the camera has at the
+# picture's bottom then draw past it, which on a console writes a few pixels into the next framebuffer's top rows,
+# under the overscan border, but in RT64 makes the frame as tall as the scissor: RT64 copies whole rows of it to RAM,
+# over the top of the next framebuffer, takes that one's RAM as changed and draws it from RAM, so an old frame can
+# flash up at 4:3 with black at its sides. Each of the function's two scissors stops at the picture's bottom instead.
+[[patches.hook]]
+func = "pfDrawFonts"
+before_vram = 0x8004E07C
+text = "ctx->r2 = 0x004FC3C0;"
+
+[[patches.hook]]
+func = "pfDrawFonts"
+before_vram = 0x8004E644
+text = "ctx->r2 = 0x004FC3C0;"

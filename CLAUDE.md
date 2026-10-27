@@ -38,9 +38,9 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   Auto), plus modern enhancements: each an option with an Original value that plays as the console does, none
   changing how the game plays. USA only.
 - The code the Mario Party recomps share is `lib/mario-party-engine` (n64hub/mario-party-engine): the process
-  scheduler's patches and natives and `gen_syms.py`, written once against this game's names in
-  `patches/engine_names.h`. A change to it is a commit there that each game's submodule moves onto, and code this game
-  would copy from another Mario Party recomp goes there instead.
+  scheduler's patches and natives, a camera's view and a board's background past 4:3 and `gen_syms.py`, written once
+  against this game's names in `patches/engine_names.h`. A change to it is a commit there that each game's submodule
+  moves onto, and code this game would copy from another Mario Party recomp goes there instead.
 - Write for a stranger, in the present tense: nothing about a contributor's machine, servers, paths or accounts, and
   nothing about where anyone keeps ROMs.
 - GPL-3.0, as the recompilations it follows.
@@ -65,5 +65,11 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Microcodes.** Graphics go to RT64. Audio: n_aspMain, recompiled by RSPRecomp from `n_aspMain.us.toml` (its
   header says how its layout was found).
 - **Saves.** EEPROM, 16 Kbit. `main.cpp` declares `SaveType::Eep16k`; the runtime keeps it in `saves/`.
+- **Drawing.** RT64 interpolates the game's frames to the display's rate with no tags in the game's display lists. The
+  game draws a frame in several RSP tasks, which RT64 interpolates as one game frame with RT64_GAME_FRAME_WORKLOADS, on
+  with Emscripten and in `CMakeLists.txt` on the desktop too. It draws a picture wider than 4:3 with Aspect Ratio
+  Expand: `patches/widescreen.c` takes a camera's view to the window's edges and `patches/background.c` a board's
+  background, through lib/mario-party-engine's `camera_view.c` and `board_back.c` (their headers say how). `us.toml`
+  stops pfDrawFonts's scissors at the picture's bottom (its comment says why).
 - **Input.** RecompFrontend's default bindings. Keyboard: WASD the stick, Space A, Left Shift B, Q Z, R R, E L,
   Enter Start, the arrows the C buttons.
