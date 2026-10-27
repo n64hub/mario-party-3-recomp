@@ -31,6 +31,6 @@ RECOMP_PATCH void func_80012640_main(s16 camIndex, Gfx** dispList) {
 RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
     HuCamera* camera = &gCameraList[camIndex];
 
-    // @recomp The whole screen, or the border, to the window's edges.
+    // @recomp The whole screen, or the border (in the board's sideways wipe between turns too), to the window's edges.
     camera_view_scissor(dispList, camera->screenLeft, camera->screenTop, camera->screenRight, camera->screenBottom);
 }
