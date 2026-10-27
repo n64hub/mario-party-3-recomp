@@ -3,15 +3,17 @@
   "The page's plan for N64Recomp-browser's tools/play_page.mjs, its regular play of 2-3 minutes: the launcher, Load ROM",
   "on a new profile, Start Game, then Start (Enter) through the logos and the title to the file select, A (Space) on a",
   "new file into the mode select and through the Millennium Star's greeting, the stick left (A) onto the Battle Royale",
-  "star, and A through the rules question and the party's setup onto that map's first board, Chilly Waters, where A",
-  "rolls the dice for player 1 and the computer plays the other three. Which screen is up is the overlay omOvlGotoEx",
-  "last went to, omovl (0x800CE200): the file select 0x79, the mode select 0x77, the setup 0x78, the boards 0x48 (Chilly",
-  "Waters) to 0x4E. The mode select's glove is a word of its own at 0x8010F730, 0 until the greeting ends, then the",
-  "glove's x: 0xAC on the middle star, 0x90 on the Battle Royale star. The stick moves it only while the hub shows what",
-  "it points at, as it does once the greeting ends; A on the middle star talks instead. On the board, A plays through",
-  "its opening (0x53) and the turn until the game leaves for the turn's minigame: its instructions are 0x70, the",
-  "minigames 0x01 to 0x46. A need fails the run unless the game is on a board, its opening, a minigame's instructions",
-  "or in a minigame."
+  "star, and A through the rules question into the party's setup, A once a second through the setup until the game",
+  "leaves it, then again through the board's opening (the turn order, the first star) onto that map's first board,",
+  "Chilly Waters, where A rolls the dice for player 1 and the computer plays the other three. Which screen is up is the",
+  "overlay omOvlGotoEx last went to, omovl (0x800CE200): the file select 0x79, the mode select 0x77, the setup 0x78,",
+  "then boardcall 0x47 for a moment, the board's opening 0x53, and the boards 0x48 (Chilly Waters) to 0x4E. On a busy",
+  "host the setup takes up to 50 s and the opening over 60, so each has a pressUntil and a need of its own. The mode",
+  "select's glove is a word of its own at 0x8010F730, 0 until the greeting ends, then the glove's x: 0xAC on the middle",
+  "star, 0x90 on the Battle Royale star. The stick moves it only while the hub shows what it points at, as it does once",
+  "the greeting ends; A on the middle star talks instead. On the board, A plays through the turn until the game leaves",
+  "for the turn's minigame: its instructions are 0x70, the minigames 0x01 to 0x46. A need fails the run unless the game",
+  "is on a board, its opening, a minigame's instructions or in a minigame."
  ],
  "page": "MarioParty3Recompiled.html",
  "load": [
@@ -124,8 +126,26 @@
    32,
    150,
    1000,
+   "n64r(0x800CE200) !== 0x78",
+   90000
+  ],
+  [
+   "need",
+   "(o => o === 0x47 || o === 0x53 || (o >= 0x48 && o <= 0x4E))(n64r(0x800CE200))"
+  ],
+  [
+   "shot",
+   "board_opening.png"
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   1000,
    "(o => o >= 0x48 && o <= 0x4E)(n64r(0x800CE200))",
-   120000
+   90000
   ],
   [
    "need",
