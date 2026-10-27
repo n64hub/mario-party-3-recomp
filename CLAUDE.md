@@ -72,7 +72,8 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   Expand: `patches/widescreen.c` takes a camera's view to the window's edges and `patches/background.c` a board's
   background, through lib/mario-party-engine's `camera_view.c` and `board_back.c` (their headers say how), and
   `us.toml`'s hooks in the sprite manager the board's HUD, the players' panels, to its left and right edges, through
-  lib/mario-party-engine's `src/hud.cpp`. `us.toml` also stops pfDrawFonts's scissors at the picture's bottom (its
+  lib/mario-party-engine's `src/hud.cpp`, and its hooks in the wipe module draw an iris's and a fade's colour to
+  them too, through its `src/wipe.cpp`. `us.toml` also stops pfDrawFonts's scissors at the picture's bottom (its
   comment says why).
 - **Input.** RecompFrontend's default bindings. Keyboard: WASD the stick, Space A, Left Shift B, Q Z, R R, E L,
   Enter Start, the arrows the C buttons.
