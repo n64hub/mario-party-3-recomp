@@ -391,7 +391,8 @@ RECOMP_PATCH void func_800E86CC_shared_board_000FC2EC(Gfx** game_gfx, s32 arg1, 
     }
 
     // @recomp The tiles at their places on the map, moved by the scroll, zoomed and mirrored as the game draws them.
-    board_back_view(gfx, left_edge(), top_edge(), D_80101250_shared_board, (D_80102DC0_shared_board & 0x10) != 0);
+    board_back_view(gfx, left_edge(), top_edge(), D_80101250_shared_board, (D_80102DC0_shared_board & 0x10) != 0,
+                    D_80101248_shared_board->unk8 * TILE_WIDTH);
     for (i = 0; i < ROWS; i++) {
         for (j = 0; j < COLUMNS; j++) {
             if (grid[j][i] == NULL) {
