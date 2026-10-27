@@ -192,6 +192,7 @@ target_sources(MarioParty3Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/game/config.cpp
     ${CMAKE_SOURCE_DIR}/src/game/libultra.cpp
     ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/process_threads.cpp
+    ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/hud.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
     ${CMAKE_SOURCE_DIR}/src/game/survey.cpp
 )
@@ -206,6 +207,7 @@ endif()
 target_include_directories(MarioParty3Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/include
     ${CMAKE_SOURCE_DIR}/lib/N64ModernRuntime/N64Recomp/include
+    ${CMAKE_SOURCE_DIR}/lib/rt64/include
     ${CMAKE_SOURCE_DIR}/lib/N64ModernRuntime/thirdparty
     ${CMAKE_SOURCE_DIR}/lib/N64ModernRuntime/thirdparty/sse2neon
     ${CMAKE_SOURCE_DIR}/lib/rt64/src/contrib
