@@ -1,0 +1,25 @@
+# The image tools/release.sh builds the Linux release in: rush-2049-recomp's and perfect-dark-recomp's Linux image,
+# instruction for instruction. Ubuntu 22.04, so the binary needs glibc 2.35 and runs there, on Debian 12 and on anything
+# newer; clang 18 from apt.llvm.org (jammy's own is 14), which also builds patches/ for MIPS with its ld.lld; g++ 12's
+# libstdc++ headers for C++20; CMake 3.31, as the submodules' cmake_minimum_required rejects CMake 4; Ninja, ccache,
+# GTK 3, FreeType and patchelf; SDL2 2.30.3 from source, the version the Windows build ships, as jammy's 2.0.20 lacks
+# SDL_GetWindowSizeInPixels, which plume calls, and which the release carries beside the binary. Xvfb, Mesa's Vulkan
+# drivers (lavapipe, on the CPU) and ImageMagick run and screenshot the program where there is no display.
+# release.sh tags the image with a hash of this file, so a change here makes the next run build a new one.
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates curl gnupg git make ninja-build ccache \
+    python3 g++-12 libsdl2-dev libgtk-3-dev libfreetype-dev patchelf xz-utils \
+    xvfb mesa-vulkan-drivers libvulkan1 vulkan-tools x11-apps imagemagick && \
+    curl -sSf https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm.gpg && \
+    echo "deb [signed-by=/usr/share/keyrings/llvm.gpg] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main" \
+        > /etc/apt/sources.list.d/llvm.list && \
+    apt-get update && apt-get install -y --no-install-recommends clang-18 lld-18 && \
+    ln -s /usr/bin/clang-18 /usr/local/bin/clang && ln -s /usr/bin/clang++-18 /usr/local/bin/clang++ && \
+    ln -s /usr/bin/ld.lld-18 /usr/local/bin/ld.lld && rm -rf /var/lib/apt/lists/*
+RUN curl -sSfL https://github.com/Kitware/CMake/releases/download/v3.31.9/cmake-3.31.9-linux-x86_64.tar.gz | \
+    tar xz -C /opt && ln -s /opt/cmake-3.31.9-linux-x86_64/bin/* /usr/local/bin/
+RUN curl -sSfL https://github.com/libsdl-org/SDL/releases/download/release-2.30.3/SDL2-2.30.3.tar.gz | tar xz -C /tmp && \
+    cmake -S /tmp/SDL2-2.30.3 -B /tmp/sdl -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang \
+        -DSDL_STATIC=OFF -DSDL_TEST=OFF > /dev/null && \
+    ninja -C /tmp/sdl install > /dev/null && rm -rf /tmp/SDL2-2.30.3 /tmp/sdl && ldconfig

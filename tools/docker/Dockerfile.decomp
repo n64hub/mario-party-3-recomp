@@ -1,0 +1,21 @@
+# The Mario Party 3 decomp's build (lib/marioparty3's README, tools/install.sh and tools/Makefile): MIPS binutils, a
+# host gcc and cpp for its syntax check and linker script (-m32, hence the multilib), the 32-bit libc its KMC gcc 2.7.2
+# binaries run on, wget for the compilers its tools/Makefile downloads (KMC gcc, IDO 5.3 for libm, slinky), and Python
+# with a venv for splat and spimdisasm (its requirements.txt, installed into the checkout's venv/ by
+# tools/build_decomp.sh).
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        binutils-mips-linux-gnu \
+        build-essential \
+        ca-certificates \
+        gcc-multilib \
+        git \
+        make \
+        python3 \
+        python3-dev \
+        python3-pip \
+        python3-venv \
+        wget && \
+    rm -rf /var/lib/apt/lists/*

@@ -1,0 +1,41 @@
+# N64Recomp's configuration for Mario Party 3 (USA), SHA-1 6beb80ff822b96bcf85dcdb512e8b2b7969d8259: it reads the
+# game's code out of the ROM by the symbols tools/gen_syms.sh dumps from the decomp's ELF, and writes RecompiledFuncs/
+# (tools/recompile.sh). The code is stored raw in the ROM: main after the boot code, and each of the 131 overlays
+# (minigames, boards, menus, the three board_code segments) where marioparty3.yaml has it, so there is nothing to
+# decompress first.
+[input]
+# The decomp's entrypoint (asm/entrypoint.s), the ROM header's.
+entrypoint = 0x80000400
+# Paths are relative to this file.
+symbols_file_path = "syms/marioparty3.us.syms.toml"
+rom_file_path = "roms/marioparty3.us.z64"
+output_func_path = "RecompiledFuncs"
+use_absolute_symbols = true
+
+[patches]
+# Functions recompiled as empty ones.
+stubs = [
+    # libultra's rmon (2.0L/monutil), the debugger monitor's jump into its exception handler, which only a debugger
+    # reaches: it stores k0 below its stack pointer, which N64Recomp can't analyze.
+    "func_800818C8_main",
+    # libleo's boot of a 64DD disk game, which the game links in and reaches only with a 64DD attached, which the
+    # runtime never reports: func_80071B50_main decodes the code after it (the ROM holds it scrambled, which
+    # N64Recomp can't analyze) and calls it.
+    "func_80071B50_main",
+    "func_80071C8C_main",
+]
+# Functions written as <name>_recomp: their names are the C library's too (the game's libm, lib/marioparty3's
+# src/libm, which N64Recomp recompiles rather than leaves out, as it does sinf, sqrt and the rest).
+renamed = [
+    "atan2",
+    "exp",
+    "expf",
+    "log",
+    "logf",
+]
+
+# The survey (patches/survey.c): the overlay a script asked for, in place of the one the game goes to.
+[[patches.hook]]
+func = "omOvlGotoEx"
+before_vram = 0x80048228
+text = "{ void mp_survey_goto(uint8_t*, gpr*, gpr*, gpr*); mp_survey_goto(rdram, &ctx->r4, &ctx->r5, &ctx->r6); }"

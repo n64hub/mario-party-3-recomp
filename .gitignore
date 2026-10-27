@@ -1,0 +1,32 @@
+# ROMs and ROM-derived data never go in git
+*.z64
+*.n64
+*.v64
+*.rom
+*.bin
+*.elf
+/baserom*
+/roms/
+/RecompiledFuncs/
+/RecompiledPatches/
+/rsp/
+
+# Build output
+/build/
+/build-*/
+/out/
+/patches/*.o
+/patches/*.d
+/patches/patches.map
+*.nrm
+.vs/
+*.user
+__pycache__/
+
+# What a run from the checkout writes (portable.txt makes the app keep its data here)
+/portable.txt
+/saves/
+/*.json
+/mods/
+/*.log
+/*.bak

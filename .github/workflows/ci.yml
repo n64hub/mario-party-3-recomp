@@ -1,0 +1,233 @@
+# Checks and builds, on Windows and Linux; nothing is deployed or released.
+# The ROM is user-supplied and never in git or CI, so RecompiledFuncs/ (generated from it) doesn't exist here: CI builds
+# every library and every object file of the program except the one that includes that output, and stops short of
+# linking. The patches need no ROM: they are compiled against lib/marioparty3's headers and recompiled with syms/, on Linux.
+#
+# The submodules and the build directory are cached together, keyed on the runner image and the submodule commits (the
+# configure patches them with N64Recomp-browser's patches/). On an exact hit ninja finds the libraries up to date (the cache
+# keeps mtimes); otherwise the newest cache is restored, the submodules are updated in place and ninja rebuilds what
+# changed.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-windows:
+    runs-on: windows-2025
+    timeout-minutes: 90
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+    steps:
+      # Not actions/checkout: its cleanup walks every submodule the cache restored, ~15 s on Windows. Retried, as
+      # actions/checkout retries its fetch.
+      - name: Checkout
+        shell: bash
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          git init -q
+          for i in 1 2 3; do
+            git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)" fetch -q --depth 1 --no-tags "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$GITHUB_SHA" &&
+              git checkout -q FETCH_HEAD && exit 0
+            echo "attempt $i failed"; sleep $((i * 5))
+          done
+          exit 1
+      - name: Cache key
+        id: key
+        shell: bash
+        run: |
+          prefix="build-v1-$ImageOS-"
+          echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
+          echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            .git/modules
+            lib/N64ModernRuntime
+            lib/N64Recomp-browser
+            lib/RecompFrontend
+            lib/rt64
+            build
+          key: ${{ steps.key.outputs.key }}
+          restore-keys: ${{ steps.key.outputs.prefix }}
+      # Not the decomp (lib/marioparty3): only patches/ includes it, which the Linux job builds. In parallel, retried, and
+      # cleaned, as a cache restored by prefix holds the submodules as older patches left them.
+      - name: Submodules
+        if: steps.cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          for i in 1 2 3; do
+            git -c protocol.version=2 submodule update --init --recursive --force --depth 1 --jobs 8 \
+                lib/N64ModernRuntime lib/N64Recomp-browser lib/RecompFrontend lib/rt64 &&
+              git submodule foreach --recursive -q git clean -fdq &&
+              git submodule foreach --recursive -q git reset -q --hard && exit 0
+            echo "attempt $i failed"; sleep $((i * 15))
+          done
+          exit 1
+      # CMake 3.31: CMake 4 rejects the older submodules' cmake_minimum_required.
+      - uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.31.0"
+          ninjaVersion: "^1.13.0"
+      - uses: mozilla-actions/sccache-action@v0.0.9
+        id: sccache
+      - name: Stand in for the ROM-generated sources
+        shell: bash
+        run: |
+          mkdir -p RecompiledFuncs
+          echo "// CI placeholder: generated from the ROM on a real build" > RecompiledFuncs/ci_placeholder.c
+      # No MSVC developer environment: clang-cl finds MSVC and the Windows SDK by itself. No patches library: it needs
+      # a MIPS clang, and the Linux job builds it. The configure applies N64Recomp-browser's patches.
+      - name: Configure
+        run: |
+          clang-cl --version
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl `
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache `
+            -DMP_PATCHES=OFF
+      # A first configure writes backslashed paths into the compile commands and every later one forward slashes, so a
+      # build cached straight after a first configure would rebuild everything on the next run.
+      - name: Configure again before a build that gets cached
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: cmake build
+      # Started once, before ninja: otherwise the first compiles race to start it, and one can time out.
+      - name: Start sccache
+        shell: bash
+        run: |
+          for i in 1 2 3; do
+            sccache --start-server && exit 0
+            sleep 5; sccache --show-stats > /dev/null && exit 0
+            echo "attempt $i failed"
+          done
+          exit 1
+      - name: Build runtime, renderer and frontend libraries
+        run: ninja -C build librecomp ultramodern rt64 recompui recompinput nfd
+      - name: Compile the game's own sources
+        shell: bash
+        run: |
+          objs=$(ninja -C build -t targets all |
+            grep -oE '^CMakeFiles/MarioParty3Recompiled\.dir/[^:]+\.obj' | grep -v register_overlays)
+          [ -n "$objs" ] || { echo "no object targets found"; exit 1; }
+          echo "$objs"
+          ninja -C build $objs
+      - name: sccache stats
+        if: always() && steps.sccache.outcome == 'success'
+        run: sccache --show-stats
+
+  # The checks, the patches, and the same build on Linux with clang.
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      SCCACHE_GHA_ENABLED: "true"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: No ROM data tracked, TOML parses, Python compiles
+        run: python -I tools/ci/check_repo.py
+      - name: Cache key
+        id: key
+        run: |
+          prefix="build-v1-$ImageOS-"
+          echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
+          echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)" >> "$GITHUB_OUTPUT"
+          echo "apt=apt-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: cache
+        with:
+          path: |
+            .git/modules
+            lib
+            build
+          key: ${{ steps.key.outputs.key }}
+          restore-keys: ${{ steps.key.outputs.prefix }}
+      # Retried: one transient "Empty reply from server" from a submodule host otherwise fails the whole build. A cache
+      # restored by prefix holds the submodules as older patches left them: clean them, nested submodules too.
+      - name: Submodules
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          for i in 1 2 3; do
+            git -c protocol.version=2 submodule update --init --recursive --force --depth 1 --jobs 8 &&
+              git submodule foreach --recursive -q git clean -fdq &&
+              git submodule foreach --recursive -q git reset -q --hard && exit 0
+            echo "attempt $i failed"; sleep $((i * 15))
+          done
+          exit 1
+      # The web support (CLAUDE.md, "How it fits together"): N64Recomp-browser's patches/ holds each of its forks as a
+      # patch on the upstream commit the fork is on, which its patches/patches.txt names, so the submodules here, and
+      # plume, hlslpp and N64Recomp inside them, pin those commits.
+      - name: Submodules pin the upstream commits N64Recomp-browser's patches are made on
+        run: |
+          grep -v '^#' lib/N64Recomp-browser/patches/patches.txt | while read -r name path fork base; do
+            [ -n "$name" ] || continue
+            # git ls-tree takes the path from the folder it runs in: lib for rt64, lib/rt64/src/contrib for plume
+            pinned="$(git -C "$(dirname "lib/$path")" ls-tree HEAD "$(basename "$path")" | awk '{print $3}')"
+            echo "$name: N64Recomp-browser $base, here $pinned"
+            [ "$pinned" = "$base" ] || { echo "lib/$path isn't at the commit N64Recomp-browser's patches.txt names" >&2; exit 1; }
+          done
+      - uses: actions/cache@v4
+        with:
+          path: ~/apt-archives
+          key: ${{ steps.key.outputs.apt }}
+      - name: Install dependencies
+        run: |
+          pkgs="clang lld libsdl2-dev libgtk-3-dev libfreetype-dev"
+          if ls ~/apt-archives/*.deb > /dev/null 2>&1 && sudo dpkg -i ~/apt-archives/*.deb > /dev/null &&
+              dpkg -s $pkgs > /dev/null; then exit 0; fi
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends $pkgs
+          mkdir -p ~/apt-archives && cp /var/cache/apt/archives/*.deb ~/apt-archives/
+      # CMake 3.31: CMake 4 rejects the older submodules' cmake_minimum_required.
+      - uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.31.0"
+          ninjaVersion: "^1.13.0"
+      - uses: mozilla-actions/sccache-action@v0.0.9
+        id: sccache
+      - name: Stand in for the ROM-generated sources
+        run: |
+          mkdir -p RecompiledFuncs
+          echo "// CI placeholder: generated from the ROM on a real build" > RecompiledFuncs/ci_placeholder.c
+      - name: Configure
+        run: |
+          clang --version
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache
+      - name: Start sccache
+        run: |
+          for i in 1 2 3; do
+            sccache --start-server && exit 0
+            sleep 5; sccache --show-stats > /dev/null && exit 0
+            echo "attempt $i failed"
+          done
+          exit 1
+      - name: Build runtime, renderer and frontend libraries
+        run: ninja -C build librecomp ultramodern rt64 recompui recompinput nfd
+      - name: Build the patches
+        run: ninja -C build PatchesLib
+      - name: Compile the game's own sources
+        run: |
+          objs=$(ninja -C build -t targets all |
+            grep -oE '^CMakeFiles/MarioParty3Recompiled\.dir/[^:]+\.o' | grep -v register_overlays)
+          [ -n "$objs" ] || { echo "no object targets found"; exit 1; }
+          echo "$objs"
+          ninja -C build $objs
+      - name: sccache stats
+        if: always() && steps.sccache.outcome == 'success'
+        run: sccache --show-stats

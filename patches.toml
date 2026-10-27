@@ -1,0 +1,27 @@
+# N64Recomp's configuration for the patches (patches/), recompiled into RecompiledPatches/ and patches/patches.bin by
+# CMakeLists.txt's PatchesLib.
+
+[input]
+# Paths are relative to this file.
+elf_path = "patches/patches.elf"
+output_func_path = "RecompiledPatches"
+single_file_output = true
+
+# Allow absolute symbols to be used as jump targets (the natives in patches/syms.ld).
+use_absolute_symbols = true
+
+# The game's symbols, so that a patch resolves the functions and data it names.
+func_reference_syms_file = "syms/marioparty3.us.syms.toml"
+data_reference_syms_files = [ "syms/marioparty3.us.datasyms.toml" ]
+
+# Written by the recompiler rather than objcopy, so that it can patch the MIPS32 relocations.
+output_binary_path = "patches/patches.bin"
+
+# clang makes many unpaired LO16 relocations.
+unpaired_lo16_warnings = false
+
+# Functions and events mods can use.
+allow_exports = true
+
+# A patch must name a function the game has, and a function that is no patch mustn't.
+strict_patch_mode = true
