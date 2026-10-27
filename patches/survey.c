@@ -8,7 +8,12 @@
 // changes its arguments (src/game/survey.cpp). So the game leaves the overlay it is in its own way, with what it frees
 // and sets up as it does, which a call of omOvlGotoEx from elsewhere skips. Going from the overlay a party's setup leads
 // to (0x48, Chilly Waters, the Battle Royale map's first board) to another board or a minigame, the four players are
-// set up as a board has them.
+// set up as a board has them, but for what a board sets as it starts a minigame: which players the computer plays, the
+// teams (GwPlayer's group: a 1-vs-3 minigame makes its objects for the players whose group isn't 0, and reads them
+// as a computer player's turn starts, so without teams Coconut Conk reads through a null pointer) and GwSystem's
+// minigame_index (the minigame's overlay). So a request also carries `groups`, a byte a player from player 1's in the
+// top byte (all ones: leave them), and `computers`, a bit a player from bit 0, set only when bit 31 is, and taking it
+// sets the minigame_index when the overlay is a minigame.
 //
 // `warps` counts the requests taken, and every frame the struct carries the overlay playing (omovl, the one
 // omOvlGotoEx last went to) and a count of the scheduler's frames (HuPrcCall, patches/process.c, calls survey_tick once
@@ -31,9 +36,11 @@ struct Survey {
     volatile u32 warps;
     volatile s32 cur_overlay;
     volatile u32 frames;
+    volatile u32 groups;
+    volatile u32 computers;
 };
 
-struct Survey survey = { { 0x4D505254, 0x53525659 }, 0, -1, 0, 0, 0, 0, -1, 0 }; // "MPRT" "SRVY"
+struct Survey survey = { { 0x4D505254, 0x53525659 }, 0, -1, 0, 0, 0, 0, -1, 0, 0xFFFFFFFF, 0 }; // "MPRT" "SRVY"
 
 void survey_tick(void) {
     if (survey.frames == 0) {
