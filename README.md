@@ -13,11 +13,13 @@ and menus): the game's own MIPS code translated to C and run natively, with RT64
 The repo holds no ROM, no asset from the game and no data extracted from it: you supply your own ROM, and nothing in
 git or CI is made from one except the symbol names and addresses in `syms/`.
 
-**Status:** the first boot. The game's process scheduler, which switches between dozens of small processes with its
-own setjmp and longjmp, runs each process on a thread of its own, one at a time, on the desktop and in a browser alike
-([docs/processes.md](docs/processes.md)), the same code as
-[Mario Party: Recompiled](https://github.com/n64hub/mario-party-recomp)'s, which this repo started from. Polish (interpolation to the display's rate, widescreen) is still to come.
-The game also plays in a browser, built from your ROM as a web page ([docs/web.md](docs/web.md)).
+**Status:** plays its menus, its six boards and its minigames, on the desktop and in a browser, interpolated to the
+display's rate and drawn at the window's size and shape (RT64's Framerate Display, Resolution Auto and Aspect Ratio
+Expand, a board's camera widened to the window's edges). The game's process scheduler, which switches between dozens
+of small processes with its own setjmp and longjmp, runs each process on a thread of its own, one at a time, on the
+desktop and in a browser alike ([docs/processes.md](docs/processes.md)), the same code as
+[Mario Party: Recompiled](https://github.com/n64hub/mario-party-recomp)'s, which this repo started from. The browser's
+page is built from your ROM ([docs/web.md](docs/web.md)).
 
 ## The ROM
 

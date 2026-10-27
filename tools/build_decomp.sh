@@ -4,8 +4,9 @@
 # (BUILD_HOST). Never in CI: the build needs the ROM.
 #
 # `make -C tools` downloads the compilers it builds with, `make setup` splits the ROM's code and data with splat
-# (marioparty3.yaml), `make` builds them with KMC gcc 2.7.2 (libm with IDO 5.3) and checks the ROM it links against the one you gave it. gcc puts every function, static ones too, in the ELF's symbol
-# table, so the ELF is used as it is linked. Into build/decomp/: marioparty3.elf. Nothing from it is committed but what
+# (marioparty3.yaml), `make` builds them with KMC gcc 2.7.2 (libm with IDO 5.3) and checks the ROM it links against
+# the one you gave it. gcc puts every function, static ones too, in the ELF's symbol table, so the ELF is used as it
+# is linked. Into build/decomp/: marioparty3.elf. Nothing from it is committed but what
 # tools/gen_syms.sh writes from it.
 #
 # Usage: [BUILD_HOST=<ssh host>] [DECOMP_DIR=<folder under ~, default marioparty3-decomp>] tools/build_decomp.sh [roms/marioparty3.us.z64]
