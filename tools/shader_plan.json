@@ -1,0 +1,2144 @@
+{
+ "page": "MarioParty3Recompiled.html",
+ "header": [
+  "The RT64 shaders the web page builds: one shader description a line, other mode L and H, color combiner L and H,",
+  "flags, in hex. RT64 specializes each one's WGSL when the page is built and builds them with the game waiting: those",
+  "above the first \"section\" line before the game starts, and a section's when the game first draws with its shaders,",
+  "so that nothing draws with the ubershader, which integrated graphics can't afford (N64Recomp-browser's",
+  "docs/porting.md, Prebuilt shader lists).",
+  "Recorded by code, not by playing: bash tools/record_shaders.sh (its header says how) runs N64Recomp-browser's",
+  "tools/record_shaders.mjs with tools/shader_plan.json, which loads the page fresh for each section. Section 0 is the",
+  "launcher, the logos, the title, the file select, the mode select and a Battle Royale's setup, reached as",
+  "tools/play_plan.json reaches them. Then a section a board, the Battle Royale map's six, each started from the setup",
+  "with the board's index written where the setup reads it (GwSystem's current_board_index, 0x800CD059) and played by",
+  "the computer for a minute and a half, Chilly Waters for a whole turn: the minigame's instructions, the minigame the",
+  "board picks, its results and back to the board. Then the 70 minigames, six a section: the survey (patches/survey.c,",
+  "tools/survey.js) takes the setup's way to the first board to the first minigame instead, and each minigame's end to",
+  "the next, with the teams its kind has (1 vs 3, 2 vs 2, 4 players, one player) and four computer players, who play",
+  "each to its end but the last, Dizzy Dinghies, which they don't finish in the three minutes it is played. Not",
+  "recorded: the Duel Map and its boards, Story mode, the Mini-Game House, the options and the records. Flags follow",
+  "settings (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means recording again."
+ ],
+ "load": [
+  [
+   "wait",
+   8000
+  ]
+ ],
+ "setup": [
+  [
+   "rom",
+   627,
+   364
+  ],
+  [
+   "wait",
+   3000
+  ]
+ ],
+ "start": [
+  [
+   "click",
+   627,
+   364
+  ],
+  [
+   "wait",
+   15000
+  ],
+  [
+   "pressUntil",
+   "Enter",
+   "Enter",
+   13,
+   150,
+   2000,
+   "n64r(0x800CE200) === 0x79",
+   90000
+  ],
+  [
+   "wait",
+   3000
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   1500,
+   "n64r(0x800CE200) === 0x77",
+   60000
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   2500,
+   "n64r(0x8010F730) === 0xAC",
+   30000
+  ],
+  [
+   "pressUntil",
+   "KeyA",
+   "a",
+   65,
+   400,
+   1500,
+   "n64r(0x8010F730) === 0x90",
+   10000
+  ],
+  [
+   "pressUntil",
+   "Space",
+   " ",
+   32,
+   150,
+   2500,
+   "n64r(0x800CE200) === 0x78",
+   30000
+  ],
+  [
+   "need",
+   "n64r(0x800CE200) === 0x78"
+  ]
+ ],
+ "sections": [
+  {
+   "name": "chilly",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "(n64w(0x800CD058, ((n64r(0x800CD058) & 0xFF00FFFF) | (0 << 16)) >>> 0), overlay() === 0x48)",
+     150000
+    ],
+    [
+     "need",
+     "overlay() === 0x48"
+    ],
+    [
+     "wait",
+     3000
+    ],
+    [
+     "eval",
+     "[0, 1, 2, 3].forEach((p) => { const a = 0x800d110c + p * 0x38; n64w(a, (n64r(a) | 0x01000000) >>> 0); }), 'computers'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "overlay() === 0x70",
+     300000
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "overlay() === 0x48",
+     300000
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "false",
+     20000
+    ]
+   ]
+  },
+  {
+   "name": "bloober",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "(n64w(0x800CD058, ((n64r(0x800CD058) & 0xFF00FFFF) | (1 << 16)) >>> 0), overlay() === 0x49)",
+     150000
+    ],
+    [
+     "need",
+     "overlay() === 0x49"
+    ],
+    [
+     "wait",
+     3000
+    ],
+    [
+     "eval",
+     "[0, 1, 2, 3].forEach((p) => { const a = 0x800d110c + p * 0x38; n64w(a, (n64r(a) | 0x01000000) >>> 0); }), 'computers'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "false",
+     90000
+    ]
+   ]
+  },
+  {
+   "name": "spiny",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "(n64w(0x800CD058, ((n64r(0x800CD058) & 0xFF00FFFF) | (2 << 16)) >>> 0), overlay() === 0x4A)",
+     150000
+    ],
+    [
+     "need",
+     "overlay() === 0x4A"
+    ],
+    [
+     "wait",
+     3000
+    ],
+    [
+     "eval",
+     "[0, 1, 2, 3].forEach((p) => { const a = 0x800d110c + p * 0x38; n64w(a, (n64r(a) | 0x01000000) >>> 0); }), 'computers'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "false",
+     90000
+    ]
+   ]
+  },
+  {
+   "name": "woody",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "(n64w(0x800CD058, ((n64r(0x800CD058) & 0xFF00FFFF) | (3 << 16)) >>> 0), overlay() === 0x4B)",
+     150000
+    ],
+    [
+     "need",
+     "overlay() === 0x4B"
+    ],
+    [
+     "wait",
+     3000
+    ],
+    [
+     "eval",
+     "[0, 1, 2, 3].forEach((p) => { const a = 0x800d110c + p * 0x38; n64w(a, (n64r(a) | 0x01000000) >>> 0); }), 'computers'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "false",
+     90000
+    ]
+   ]
+  },
+  {
+   "name": "creepy",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "(n64w(0x800CD058, ((n64r(0x800CD058) & 0xFF00FFFF) | (4 << 16)) >>> 0), overlay() === 0x4C)",
+     150000
+    ],
+    [
+     "need",
+     "overlay() === 0x4C"
+    ],
+    [
+     "wait",
+     3000
+    ],
+    [
+     "eval",
+     "[0, 1, 2, 3].forEach((p) => { const a = 0x800d110c + p * 0x38; n64w(a, (n64r(a) | 0x01000000) >>> 0); }), 'computers'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "false",
+     90000
+    ]
+   ]
+  },
+  {
+   "name": "waluigi",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "(n64w(0x800CD058, ((n64r(0x800CD058) & 0xFF00FFFF) | (5 << 16)) >>> 0), overlay() === 0x4D)",
+     150000
+    ],
+    [
+     "need",
+     "overlay() === 0x4D"
+    ],
+    [
+     "wait",
+     3000
+    ],
+    [
+     "eval",
+     "[0, 1, 2, 3].forEach((p) => { const a = 0x800d110c + p * 0x38; n64w(a, (n64r(a) | 0x01000000) >>> 0); }), 'computers'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     2000,
+     "false",
+     90000
+    ]
+   ]
+  },
+  {
+   "name": "minigames01",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x01, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'asked 0x01'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x01",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x01"
+    ],
+    [
+     "eval",
+     "go(-1, 0x02, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x02'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x01",
+     180000
+    ],
+    [
+     "eval",
+     "'0x01 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x02, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x03, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x03'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x02",
+     180000
+    ],
+    [
+     "eval",
+     "'0x02 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x03, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x04, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x04'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x03",
+     180000
+    ],
+    [
+     "eval",
+     "'0x03 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x04, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x05, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x05'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x04",
+     180000
+    ],
+    [
+     "eval",
+     "'0x04 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x05, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x06, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x06'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x05",
+     180000
+    ],
+    [
+     "eval",
+     "'0x05 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x06, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x06",
+     180000
+    ],
+    [
+     "eval",
+     "'0x06 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames07",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x07, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'asked 0x07'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x07",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x07"
+    ],
+    [
+     "eval",
+     "go(-1, 0x08, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x08'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x07",
+     180000
+    ],
+    [
+     "eval",
+     "'0x07 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x08, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x09, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x09'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x08",
+     180000
+    ],
+    [
+     "eval",
+     "'0x08 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x09, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x0A, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x0A'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x09",
+     180000
+    ],
+    [
+     "eval",
+     "'0x09 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x0A, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x0B, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x0B'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x0A",
+     180000
+    ],
+    [
+     "eval",
+     "'0x0A ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x0B, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x0C, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x0C'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x0B",
+     180000
+    ],
+    [
+     "eval",
+     "'0x0B ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x0C, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x0C",
+     180000
+    ],
+    [
+     "eval",
+     "'0x0C ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames0D",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x0D, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'asked 0x0D'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x0D",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x0D"
+    ],
+    [
+     "eval",
+     "go(-1, 0x0E, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x0E'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x0D",
+     180000
+    ],
+    [
+     "eval",
+     "'0x0D ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x0E, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x0F, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x0F'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x0E",
+     180000
+    ],
+    [
+     "eval",
+     "'0x0E ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x0F, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x10, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x10'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x0F",
+     180000
+    ],
+    [
+     "eval",
+     "'0x0F ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x10, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x11, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x11'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x10",
+     180000
+    ],
+    [
+     "eval",
+     "'0x10 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x11, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x12, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x12'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x11",
+     180000
+    ],
+    [
+     "eval",
+     "'0x11 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x12, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x12",
+     180000
+    ],
+    [
+     "eval",
+     "'0x12 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames13",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x13, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'asked 0x13'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x13",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x13"
+    ],
+    [
+     "eval",
+     "go(-1, 0x14, 0, 0x14, 1, [0,0,1,1], [true, true, true, true]); 'next 0x14'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x13",
+     180000
+    ],
+    [
+     "eval",
+     "'0x13 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x14, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x15, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x15'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x14",
+     180000
+    ],
+    [
+     "eval",
+     "'0x14 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x15, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x16, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x16'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x15",
+     180000
+    ],
+    [
+     "eval",
+     "'0x15 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x16, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x17, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x17'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x16",
+     180000
+    ],
+    [
+     "eval",
+     "'0x16 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x17, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x18, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x18'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x17",
+     180000
+    ],
+    [
+     "eval",
+     "'0x17 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x18, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x18",
+     180000
+    ],
+    [
+     "eval",
+     "'0x18 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames19",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x19, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'asked 0x19'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x19",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x19"
+    ],
+    [
+     "eval",
+     "go(-1, 0x1A, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x1A'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x19",
+     180000
+    ],
+    [
+     "eval",
+     "'0x19 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x1A, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x1B, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x1B'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x1A",
+     180000
+    ],
+    [
+     "eval",
+     "'0x1A ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x1B, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x1C, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x1C'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x1B",
+     180000
+    ],
+    [
+     "eval",
+     "'0x1B ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x1C, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x1D, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x1D'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x1C",
+     180000
+    ],
+    [
+     "eval",
+     "'0x1C ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x1D, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x1E, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x1E'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x1D",
+     180000
+    ],
+    [
+     "eval",
+     "'0x1D ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x1E, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x1E",
+     180000
+    ],
+    [
+     "eval",
+     "'0x1E ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames1F",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x1F, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'asked 0x1F'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x1F",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x1F"
+    ],
+    [
+     "eval",
+     "go(-1, 0x20, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x20'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x1F",
+     180000
+    ],
+    [
+     "eval",
+     "'0x1F ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x20, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x21, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x21'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x20",
+     180000
+    ],
+    [
+     "eval",
+     "'0x20 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x21, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x22, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x22'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x21",
+     180000
+    ],
+    [
+     "eval",
+     "'0x21 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x22, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x23, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x23'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x22",
+     180000
+    ],
+    [
+     "eval",
+     "'0x22 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x23, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x24, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x24'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x23",
+     180000
+    ],
+    [
+     "eval",
+     "'0x23 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x24, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x24",
+     180000
+    ],
+    [
+     "eval",
+     "'0x24 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames25",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x25, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'asked 0x25'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x25",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x25"
+    ],
+    [
+     "eval",
+     "go(-1, 0x26, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x26'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x25",
+     180000
+    ],
+    [
+     "eval",
+     "'0x25 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x26, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x27, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x27'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x26",
+     180000
+    ],
+    [
+     "eval",
+     "'0x26 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x27, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x28, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x28'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x27",
+     180000
+    ],
+    [
+     "eval",
+     "'0x27 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x28, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x29, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x29'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x28",
+     180000
+    ],
+    [
+     "eval",
+     "'0x28 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x29, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x2A, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x2A'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x29",
+     180000
+    ],
+    [
+     "eval",
+     "'0x29 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x2A, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x2A",
+     180000
+    ],
+    [
+     "eval",
+     "'0x2A ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames2B",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x2B, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'asked 0x2B'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x2B",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x2B"
+    ],
+    [
+     "eval",
+     "go(-1, 0x2C, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x2C'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x2B",
+     180000
+    ],
+    [
+     "eval",
+     "'0x2B ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x2C, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x2D, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x2D'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x2C",
+     180000
+    ],
+    [
+     "eval",
+     "'0x2C ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x2D, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x2E, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x2E'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x2D",
+     180000
+    ],
+    [
+     "eval",
+     "'0x2D ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x2E, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x2F, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x2F'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x2E",
+     180000
+    ],
+    [
+     "eval",
+     "'0x2E ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x2F, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x30, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x30'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x2F",
+     180000
+    ],
+    [
+     "eval",
+     "'0x2F ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x30, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x30",
+     180000
+    ],
+    [
+     "eval",
+     "'0x30 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames31",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x31, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'asked 0x31'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x31",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x31"
+    ],
+    [
+     "eval",
+     "go(-1, 0x32, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x32'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x31",
+     180000
+    ],
+    [
+     "eval",
+     "'0x31 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x32, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x33, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x33'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x32",
+     180000
+    ],
+    [
+     "eval",
+     "'0x32 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x33, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x34, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x34'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x33",
+     180000
+    ],
+    [
+     "eval",
+     "'0x33 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x34, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x35, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x35'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x34",
+     180000
+    ],
+    [
+     "eval",
+     "'0x34 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x35, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x36, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x36'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x35",
+     180000
+    ],
+    [
+     "eval",
+     "'0x35 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x36, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x36",
+     180000
+    ],
+    [
+     "eval",
+     "'0x36 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames37",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x37, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'asked 0x37'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x37",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x37"
+    ],
+    [
+     "eval",
+     "go(-1, 0x38, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x38'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x37",
+     180000
+    ],
+    [
+     "eval",
+     "'0x37 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x38, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x39, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x39'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x38",
+     180000
+    ],
+    [
+     "eval",
+     "'0x38 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x39, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x3A, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x3A'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x39",
+     180000
+    ],
+    [
+     "eval",
+     "'0x39 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x3A, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x3B, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x3B'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x3A",
+     180000
+    ],
+    [
+     "eval",
+     "'0x3A ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x3B, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x3C, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x3C'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x3B",
+     180000
+    ],
+    [
+     "eval",
+     "'0x3B ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x3C, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x3C",
+     180000
+    ],
+    [
+     "eval",
+     "'0x3C ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames3D",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x3D, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'asked 0x3D'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x3D",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x3D"
+    ],
+    [
+     "eval",
+     "go(-1, 0x3E, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x3E'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x3D",
+     180000
+    ],
+    [
+     "eval",
+     "'0x3D ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x3E, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x3F, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x3F'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x3E",
+     180000
+    ],
+    [
+     "eval",
+     "'0x3E ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x3F, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x40, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x40'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x3F",
+     180000
+    ],
+    [
+     "eval",
+     "'0x3F ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x40, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x41, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x41'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x40",
+     180000
+    ],
+    [
+     "eval",
+     "'0x40 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x41, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x42, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x42'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x41",
+     180000
+    ],
+    [
+     "eval",
+     "'0x41 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x42, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x42",
+     180000
+    ],
+    [
+     "eval",
+     "'0x42 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  },
+  {
+   "name": "minigames43",
+   "steps": [
+    [
+     "evalFile",
+     "survey.js"
+    ],
+    [
+     "eval",
+     "go(0x48, 0x43, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'asked 0x43'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     1000,
+     "overlay() === 0x43",
+     120000
+    ],
+    [
+     "need",
+     "overlay() === 0x43"
+    ],
+    [
+     "eval",
+     "go(-1, 0x44, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x44'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x43",
+     180000
+    ],
+    [
+     "eval",
+     "'0x43 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x44, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x45, 0, 0x14, 1, [0,1,1,1], [true, true, true, true]); 'next 0x45'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x44",
+     180000
+    ],
+    [
+     "eval",
+     "'0x44 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x45, 20000)"
+    ],
+    [
+     "eval",
+     "go(-1, 0x46, 0, 0x14, 1, [0,0,0,0], [true, true, true, true]); 'next 0x46'"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x45",
+     180000
+    ],
+    [
+     "eval",
+     "'0x45 ended: ' + overlay().toString(16)"
+    ],
+    [
+     "need",
+     "untilOverlay(0x46, 20000)"
+    ],
+    [
+     "pressUntil",
+     "Space",
+     " ",
+     32,
+     150,
+     3000,
+     "overlay() !== 0x46",
+     180000
+    ],
+    [
+     "eval",
+     "'0x46 ended: ' + overlay().toString(16)"
+    ]
+   ]
+  }
+ ]
+}
