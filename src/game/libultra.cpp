@@ -16,7 +16,8 @@ namespace {
     }
 }
 
-// The process scheduler's setjmp: only the recompiled originals of the functions patches/process.c replaces call it.
+// The process scheduler's setjmp: only the recompiled originals of the functions lib/mario-party-engine's
+// patches/process.c replaces call it.
 extern "C" void setjmp_recomp(uint8_t* rdram, recomp_context* ctx) {
     fprintf(stderr, "setjmp: called outside the process scheduler's patches\n");
     std::abort();

@@ -186,7 +186,7 @@ target_sources(MarioParty3Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/main/register_overlays.cpp
     ${CMAKE_SOURCE_DIR}/src/game/config.cpp
     ${CMAKE_SOURCE_DIR}/src/game/libultra.cpp
-    ${CMAKE_SOURCE_DIR}/src/game/process_threads.cpp
+    ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/process_threads.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
     ${CMAKE_SOURCE_DIR}/src/game/survey.cpp
 )
@@ -339,11 +339,12 @@ set(RECOMP_FRONTEND_N64MODERNRUNTIME_PATH ${CMAKE_SOURCE_DIR}/lib/N64ModernRunti
 set(RECOMP_FRONTEND_RT64_PATH ${CMAKE_SOURCE_DIR}/lib/rt64)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/RecompFrontend)
 
-# Prints what the process scheduler's threads cost every 5 seconds (src/game/process_threads.cpp).
+# Prints what the process scheduler's threads cost every 5 seconds (lib/mario-party-engine/src/process_threads.cpp).
 option(MP_PROCESS_STATS "Print the process scheduler's counts and costs" OFF)
 if (MP_PROCESS_STATS)
     # Only its two files, so turning it on rebuilds them and not the game.
-    set_source_files_properties(${CMAKE_SOURCE_DIR}/src/game/process_threads.cpp ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
+    set_source_files_properties(${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/process_threads.cpp
+        ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
         PROPERTIES COMPILE_DEFINITIONS MP_PROCESS_STATS)
 endif()
 

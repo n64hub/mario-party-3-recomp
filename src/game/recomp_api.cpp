@@ -1,5 +1,5 @@
 // The natives the patches call (patches/syms.ld gives each a dummy address that N64Recomp turns into a call by name).
-// The process scheduler's are process_threads.cpp.
+// The process scheduler's are lib/mario-party-engine's src/process_threads.cpp.
 
 #include <cstdio>
 #include <cstdlib>

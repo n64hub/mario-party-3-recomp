@@ -55,6 +55,7 @@ jobs:
           path: |
             .git/modules
             lib/N64ModernRuntime
+            lib/mario-party-engine
             lib/N64Recomp-browser
             lib/RecompFrontend
             lib/rt64
@@ -69,7 +70,7 @@ jobs:
         run: |
           for i in 1 2 3; do
             git -c protocol.version=2 submodule update --init --recursive --force --depth 1 --jobs 8 \
-                lib/N64ModernRuntime lib/N64Recomp-browser lib/RecompFrontend lib/rt64 &&
+                lib/N64ModernRuntime lib/N64Recomp-browser lib/RecompFrontend lib/rt64 lib/mario-party-engine &&
               git submodule foreach --recursive -q git clean -fdq &&
               git submodule foreach --recursive -q git reset -q --hard && exit 0
             echo "attempt $i failed"; sleep $((i * 15))
