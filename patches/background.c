@@ -329,12 +329,28 @@ static OverlayBgEntry* other_bank(OverlayBgEntry* entry) {
     return NULL;
 }
 
-// func_800E76EC: a tile, as its 64x32 and 64x16 parts, at (x, y) on the map, each a quad (board_back.c says why).
-static void draw_tile(Gfx** gfx, u16* pixels, s32 x, s32 y) {
-    func_8003465C_main(gfx, pixels, 0, 2, 0x40, 0x20, 0, 0, 0x40, 0x20, 0, 1, 1, 6, 5, 0, 0);
-    board_back_quad(gfx, x, y, TILE_WIDTH, 32, 0, 0);
-    func_8003465C_main(gfx, pixels + (64 * 32), 0, 2, 0x40, 0x10, 0, 0, 0x40, 0x10, 0, 1, 1, 6, 4, 0, 0);
-    board_back_quad(gfx, x, y + 32, TILE_WIDTH, 16, 0, 0);
+// The pixels of the tile at (j, i) in the grid drawn first (the other bank's once it has faded in), or with faded the
+// other bank's faded in over it; NULL past the grid or where there is none.
+static u16* tile_pixels(s32 j, s32 i, s32 faded) {
+    OverlayBgEntry* entry;
+    OverlayBgEntry* other;
+
+    if ((j >= COLUMNS) || (i >= ROWS) || (grid[j][i] == NULL)) {
+        return NULL;
+    }
+    entry = grid[j][i];
+    other = (D_80101268_shared_board != 0) ? other_bank(entry) : NULL;
+    if (faded) {
+        return (other != NULL) ? other->pixels : NULL;
+    }
+    return ((other != NULL) && (D_8010126C_shared_board == 0xFF)) ? other->pixels : entry->pixels;
+}
+
+// @recomp func_800E76EC's 64x32 and 64x16 parts, each loaded alone and filtered, met in a seam at a high resolution:
+// a tile is loaded with its neighbours' edge texels (board_back.c says why).
+static void draw_tile(Gfx** gfx, s32 j, s32 i, s32 faded) {
+    board_back_tile(gfx, (first_column + j) * TILE_WIDTH, (first_row + i) * TILE_HEIGHT, tile_pixels(j, i, faded),
+                    tile_pixels(j + 1, i, faded), tile_pixels(j, i + 1, faded), tile_pixels(j + 1, i + 1, faded));
 }
 
 RECOMP_PATCH void func_800E86CC_shared_board_000FC2EC(Gfx** game_gfx, s32 arg1, u8 arg2) {
@@ -378,23 +394,16 @@ RECOMP_PATCH void func_800E86CC_shared_board_000FC2EC(Gfx** game_gfx, s32 arg1, 
     board_back_view(gfx, left_edge(), top_edge(), D_80101250_shared_board, (D_80102DC0_shared_board & 0x10) != 0);
     for (i = 0; i < ROWS; i++) {
         for (j = 0; j < COLUMNS; j++) {
-            OverlayBgEntry* entry = grid[j][i];
-            OverlayBgEntry* other;
-            s32 x = (first_column + j) * TILE_WIDTH;
-            s32 y = (first_row + i) * TILE_HEIGHT;
-
-            if (entry == NULL) {
+            if (grid[j][i] == NULL) {
                 continue;
             }
-            other = (D_80101268_shared_board != 0) ? other_bank(entry) : NULL;
-            draw_tile(gfx, ((other != NULL) && (D_8010126C_shared_board == 0xFF)) ? other->pixels : entry->pixels, x,
-                      y);
-            if ((other != NULL) && (D_8010126C_shared_board > 0) && (D_8010126C_shared_board < 0xFF)) {
+            draw_tile(gfx, j, i, FALSE);
+            if ((tile_pixels(j, i, TRUE) != NULL) && (D_8010126C_shared_board > 0) && (D_8010126C_shared_board < 0xFF)) {
                 gDPSetEnvColor((*gfx)++, 0xFF, 0xFF, 0xFF, D_8010126C_shared_board);
                 gDPSetCombineLERP((*gfx)++, 0, 0, 0, TEXEL0, 0, 0, 0, ENVIRONMENT, 0, 0, 0, TEXEL0, 0, 0, 0,
                                   ENVIRONMENT);
                 gDPSetRenderMode((*gfx)++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-                draw_tile(gfx, other->pixels, x, y);
+                draw_tile(gfx, j, i, TRUE);
                 gDPSetEnvColor((*gfx)++, 0xFF, 0xFF, 0xFF, D_8010124C_shared_board);
                 gDPSetCombineMode((*gfx)++, G_CC_DECALRGBA, G_CC_DECALRGBA);
                 gDPSetRenderMode((*gfx)++, G_RM_AA_SUB_SURF, G_RM_AA_SUB_SURF2);
