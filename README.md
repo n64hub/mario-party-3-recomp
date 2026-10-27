@@ -15,10 +15,10 @@ git or CI is made from one except the symbol names and addresses in `syms/`.
 
 **Status:** plays its menus, its six boards and its minigames, on the desktop and in a browser, interpolated to the
 display's rate and drawn at the window's size and shape (RT64's Framerate Display, Resolution Auto and Aspect Ratio
-Expand, a board's camera widened to the window's edges). The game's process scheduler, which switches between dozens
-of small processes with its own setjmp and longjmp, runs each process on a thread of its own, one at a time, on the
-desktop and in a browser alike ([docs/processes.md](docs/processes.md)), from the code the Mario Party recomps share
-([mario-party-engine](https://github.com/n64hub/mario-party-engine)). This repo started from
+Expand, a board's camera and background widened to the window's edges). The game's process scheduler, which switches
+between dozens of small processes with its own setjmp and longjmp, runs each process on a thread of its own, one at a
+time, on the desktop and in a browser alike ([docs/processes.md](docs/processes.md)), from the code the Mario Party
+recomps share ([mario-party-engine](https://github.com/n64hub/mario-party-engine)). This repo started from
 [Mario Party: Recompiled](https://github.com/n64hub/mario-party-recomp). The browser's page is built from your ROM
 ([docs/web.md](docs/web.md)).
 
