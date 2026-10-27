@@ -57,8 +57,8 @@ without that the next one can't load.
 
 `tools/play_plan.json` reaches a board as a player does, by the keyboard's defaults (Enter is Start, Space A): Start
 through the logos and the title to the file select, A on a new file into the mode select, the stick onto the Battle
-Royale star, and A through the party's setup onto Chilly Waters, where A rolls the dice for player 1 and the computer
-plays the other three until the turn ends and the game leaves for its minigame. Which screen is up is the overlay
-`omOvlGotoEx` last went to, `omovl`, a word at 0x800CE200: the file select is 0x79, the mode select 0x77, the setup
-0x78, the boards 0x48 (Chilly Waters) to 0x4D (Waluigi's Island), a minigame's instructions 0x70 and the minigames
-0x01 to 0x46. The plan's header says each step.
+Royale star, and A through the party's setup and the board's opening onto Chilly Waters, where A rolls the dice for
+player 1 and the computer plays the other three until the turn ends and the game leaves for its minigame. Which screen
+is up is the overlay `omOvlGotoEx` last went to, `omovl`, a word at 0x800CE200: the file select is 0x79, the mode
+select 0x77, the setup 0x78, the board's opening 0x53, the boards 0x48 (Chilly Waters) to 0x4D (Waluigi's Island), a
+minigame's instructions 0x70 and the minigames 0x01 to 0x46. The plan's header says each step.
