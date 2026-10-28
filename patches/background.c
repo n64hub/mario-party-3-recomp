@@ -7,13 +7,13 @@
 // RT64's Aspect Ratio Expand widens the 3D but can't draw tiles the game never drew, and RT64 keeps a 4:3 picture's
 // rectangles inside 4:3, so the board drew in a 4:3 box with its 3D spaces and characters out past it on black.
 //
-// Here the game picks the tiles under a 21:9 picture and a row more above and below (what a frame RT64 draws between
-// two of the game's can reach), those under 4:3 first, from 124 slots (the game's 36 and 88 more here), through queues
-// as long, and draws them through lib/mario-party-engine's board_back.c: as quads at their places on the map, in a list
-// of their own with black behind them, kept to the picture's aspect and moved by an interpolated scroll, so the
-// window's sides show more of the map, and the board pans with its 3D spaces. A tile past 4:3 is sent to be read only
-// while fewer than EXTRA_IN_FLIGHT are on their way, since each holds its compressed bytes on the game's heap until it
-// is decompressed, and the game sized that heap for its 36.
+// Here the game picks the tiles under a 21:9 picture at this frame's view and the last one's (board_back_area: what a
+// frame RT64 draws between two of the game's can show), those under 4:3 first, from 124 slots (the game's 36 and 88
+// more here), through queues as long, and draws them through lib/mario-party-engine's board_back.c: as quads at their
+// places on the map, in a list of their own with black behind them, kept to the picture's aspect and moved by an
+// interpolated scroll, so the window's sides show more of the map, and the board pans with its 3D spaces. A tile past
+// 4:3 is sent to be read only while fewer than EXTRA_IN_FLIGHT are on their way, since each holds its compressed bytes
+// on the game's heap until it is decompressed, and the game sized that heap for its 36.
 //
 // The game keeps the board's camera where a 320x240 picture stays on the map (MBBackPosClamp, which every board's
 // camera goes through), so at the map's edge the wider picture ran past it, where there are no tiles, and a black
@@ -296,16 +296,19 @@ RECOMP_PATCH void func_800E7514_shared_board_000FB134(void) {
     f32 zoom = D_80101250_shared_board;
     f32 left = left_edge();
     f32 top = top_edge();
-    // The map under the 4:3 picture, and under the wide one: a screen x is the map's (x - left) * zoom, or mirrored,
-    // (320 - (x - left)) * zoom.
+    // The map under the 4:3 picture: a screen x is the map's (x - left) * zoom, or mirrored, (320 - (x - left)) * zoom.
     f32 low_x = (D_80102DC0_shared_board & 0x10) ? (left + 320.0f - 320.0f / zoom) : left;
     f32 high_x = low_x + 320.0f / zoom;
     f32 low_y = top;
     f32 high_y = top + 240.0f / zoom;
+    f32 area[4];
     s32 pass, i, j;
 
-    first_column = floor_div(low_x - WIDE_SIDE / zoom, TILE_WIDTH);
-    first_row = floor_div(low_y - TILE_HEIGHT / zoom, TILE_HEIGHT);
+    // From the map under the wide picture at this frame's view and the last one's: COLUMNS x ROWS from there cover
+    // both at a zoom of 1 or more.
+    board_back_area(left, top, zoom, (D_80102DC0_shared_board & 0x10) != 0, WIDE_SIDE, area);
+    first_column = floor_div(area[0], TILE_WIDTH);
+    first_row = floor_div(area[1], TILE_HEIGHT);
 
     // @recomp The tiles under the 4:3 picture first, so that they come first when there are too few slots and are
     // never held back, then the others.
