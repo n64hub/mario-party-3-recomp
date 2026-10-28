@@ -74,7 +74,8 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   `us.toml`'s hooks in the sprite manager the board's HUD, the players' panels, to its left and right edges, through
   lib/mario-party-engine's `src/hud.cpp`, and its hooks in the wipe module draw an iris's, the star's and a fade's
   colour to them too, through its `src/wipe.cpp`. `us.toml` also stops pfDrawFonts's scissors at the picture's
-  bottom (its comment says why). A map no wider than 320 (a board's opening, opboard's, 5x5 tiles) keeps black at
+  bottom (its comment says why). The board's camera stops where the wider picture reaches the map's edge
+  (`patches/background.c`, with the engine's `src/aspect_ratio.cpp`). A map no wider than 320 (a board's opening, opboard's, 5x5 tiles) keeps black at
   its sides, the game having nothing beside it to draw, and its 3D and the HUD keep inside 4:3 with it
   (`board_back.c`).
 - **Input.** RecompFrontend's default bindings. Keyboard: WASD the stick, Space A, Left Shift B, Q Z, R R, E L,
