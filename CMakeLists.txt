@@ -76,6 +76,10 @@ n64recomp_browser_apply_patches(${CMAKE_SOURCE_DIR}/lib)
 # task interpolated as a frame of its own drew frames between the game's from the first tasks alone, without the HUD or
 # a text box, which flickered.
 set(RT64_GAME_FRAME_WORKLOADS ON)
+# The VI thread queues a VI's screen update after it swaps in the framebuffer the game gave it, as with Emscripten:
+# queued before, a frame was shown a VI late, after the next frame's first tasks, and RT64_GAME_FRAME_WORKLOADS ended
+# most game frames at a wait instead, showing one still drawing in parts (Mario Party 1's next scene inside a star wipe).
+set(ULTRAMODERN_SCREEN_UPDATE_AFTER_VI ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)
