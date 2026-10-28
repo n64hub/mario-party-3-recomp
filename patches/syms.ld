@@ -11,3 +11,4 @@ recomp_prc_exit = 0x8F000014;
 recomp_prc_reset = 0x8F000018;
 recomp_survey_register = 0x8F00001C;
 recomp_hud_4x3 = 0x8F000020;
+mp_aspect_ratio = 0x8F000024;
