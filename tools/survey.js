@@ -13,7 +13,9 @@
 // of the player's stat, a byte at 4 in GwPlayer, 0x800D1108, 0x38 bytes a player), which a board's start sets back
 // from the setup. A minigame is left as it ends (four computer players end every one), not by a call of omOvlGotoEx
 // from elsewhere: its own ending closes its data directory and stops its sound, and without that the next one's files
-// don't load, and the processes it leaves running take the heap the next one is given.
+// don't load, and the processes it leaves running take the heap the next one is given. A minigame is given the teams
+// its kind has, as tools/shader_plan.json gives each: with another kind's it reads past its tables and traps (Pump,
+// Pump and Away, a 2 vs 2, given 1 vs 3's [0, 1, 1, 1]: "memory access out of bounds" as it starts).
 (() => {
   const magic = (a) => n64r(a) === 0x4d505254 && n64r(a + 4) === 0x53525659;
   if (!window.__survey) {
