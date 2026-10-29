@@ -84,6 +84,10 @@ set(ULTRAMODERN_SCREEN_UPDATE_AFTER_VI ON)
 # frames, as with Emscripten: an object the game hides by scaling it to 0 or with a matrix of zeros was interpolated
 # from its last matrix to none in the frames between (Mario Party 2's star across the whole view, a flat light grey).
 set(RT64_SKIP_COLLAPSED_MATCHES ON)
+# A framebuffer pair that draws only part of a screen the VI shows is judged by the whole screen, as with Emscripten:
+# the game sends some views of a split screen in an RSP task of their own, and their scissor alone, no screen's shape,
+# was drawn unnarrowed out to a wide window's edges (three of Fridged Bridges' quarters).
+set(RT64_PARTIAL_SCREEN_PAIRS ON)
 # The game turns RecompFrontend's single-player mode off, so that four people play four players (src/main/main.cpp),
 # and plays as single-player mode until players are assigned, as with Emscripten: without it a player alone needed to
 # assign their pad or keyboard first, and the keyboard played every pad's player.
