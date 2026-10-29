@@ -24,4 +24,19 @@ extern u32 sPrcSleepLoc;
 #define PRC_COUNT process_count
 #define PRC_SLEEP_LOC sPrcSleepLoc
 
+// The controllers' setup and what it uses.
+#include "pad.h"
+void SetAutoReadController(void);
+
+#define PAD_INIT InitController
+#define PAD_INIT_SI _InitController
+#define PAD_REQUEST RequestSIFunction
+#define PAD_REQUEST_T unkMesg
+#define PAD_AUTO_READ SetAutoReadController
+#define PAD_AUTO_READING D_800ABF9C_main
+#define PAD_STICK_LIMIT SetStickValueLimit
+#define PAD_LOCK D_800ABFA0_main
+#define PAD_LOCK_MESG D_800ABFB8_main
+#define PAD_CONTROLLERS gNumOfControllers
+
 #endif
