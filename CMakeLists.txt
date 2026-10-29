@@ -80,6 +80,10 @@ set(RT64_GAME_FRAME_WORKLOADS ON)
 # queued before, a frame was shown a VI late, after the next frame's first tasks, and RT64_GAME_FRAME_WORKLOADS ended
 # most game frames at a wait instead, showing one still drawing in parts (Mario Party 1's next scene inside a star wipe).
 set(ULTRAMODERN_SCREEN_UPDATE_AFTER_VI ON)
+# A transform that collapses what it draws (a zero determinant) is never paired with one that doesn't between game
+# frames, as with Emscripten: an object the game hides by scaling it to 0 or with a matrix of zeros was interpolated
+# from its last matrix to none in the frames between (Mario Party 2's star across the whole view, a flat light grey).
+set(RT64_SKIP_COLLAPSED_MATCHES ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)
