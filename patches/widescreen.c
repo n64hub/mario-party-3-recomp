@@ -49,6 +49,8 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 // - 0x13, Log Jam: its ground and the logs on it a 2D picture of the screen's size, under a sky drawn across the
 //   window.
 // - 0x14, Slot Synch: a stage of the screen's size, and the slot machines' reels past it.
+// - 0x24, Fridged Bridges: four quarters, the bottom left one and the right ones out to the window's edges past 4:3,
+//   each sent in a task of its own as Motor Rooter's right view is (below), and the top left one inside 4:3.
 // - 0x25, Awful Tower: four quarters, each a player's tower, and the ground under them past 4:3.
 // - 0x28, Snowball Summit: its ice past 4:3 drawn in stripes, under a sky drawn across the window.
 // - 0x31, Vine With Me: a team's view above the other's, and past 4:3 the window's sides white with its leaves.
@@ -60,7 +62,7 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 //   same task as its right view, and stays inside 4:3).
 // - 0x4F, a board's results on the star stage: its sky is a 2D picture of the screen's size, and the stage's 3D past
 //   4:3, confetti-covered, was drawn beside it over the black.
-static const u8 overlays_4x3[] = { 0x07, 0x08, 0x0D, 0x0E, 0x0F, 0x10, 0x13, 0x14, 0x25,
+static const u8 overlays_4x3[] = { 0x07, 0x08, 0x0D, 0x0E, 0x0F, 0x10, 0x13, 0x14, 0x24, 0x25,
                                    0x28, 0x31, 0x33, 0x34, 0x36, 0x4F };
 
 void widescreen_overlay(s32 overlay) {
