@@ -50,8 +50,8 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 //   window.
 // - 0x14, Slot Synch: a stage of the screen's size, and the slot machines' reels past it.
 // - 0x16, Toadstool Titan: a room of the screen's size, and past 4:3 the crowd of Marios coming into it.
-// - 0x17, Aces High: four quarters, each a player's sky, its bank of cloud cut off at 4:3's edge, and past it the
-//   rainbow, the planes and the wind's streaks.
+// - 0x17, Aces High: four quarters inside 4:3, each a player's sky, its bank of cloud cut off at 4:3's edge, and past
+//   them its clear's blue, the black lines between the quarters running on to the window's edges.
 // - 0x1E, Picture Imperfect: a picture of the screen's size, and past it the stage, the players cut in two at 4:3's
 //   edge and their stars.
 // - 0x25, Awful Tower: four quarters, each a player's tower, and the ground under them past 4:3.
