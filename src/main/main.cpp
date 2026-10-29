@@ -481,7 +481,12 @@ int main(int argc, char** argv) {
     marioparty::register_overlays();
     marioparty::register_patches();
 
-    recompinput::players::set_single_player_mode(true);
+    // Up to four players, each assigned a pad (or the keyboard) on the controls page's Assign players, which is then
+    // their own port (get_connected_device_info): a party of four people, a 2 vs 2 minigame. Until players are assigned
+    // every pad and the keyboard play as one on every port, as in single-player mode, with RECOMPINPUT_SINGLE_PLAYER_UNTIL_ASSIGNED
+    // (CMakeLists.txt). Who the computer plays is the game's own setting, as on a console.
+    recompinput::players::set_single_player_mode(false);
+    recompinput::players::set_player_count_range(1, 4);
 
     marioparty::init_config();
 
