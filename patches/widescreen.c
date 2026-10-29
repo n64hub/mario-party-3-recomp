@@ -66,8 +66,8 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 //   close, cut off at its edge.
 // - 0x4F, a board's results on the star stage: its sky is a 2D picture of the screen's size, and the stage's 3D past
 //   4:3, confetti-covered, was drawn beside it over the black.
-static const u8 overlays_4x3[] = { 0x07, 0x08, 0x0D, 0x0E, 0x0F, 0x10, 0x13, 0x14, 0x16, 0x17, 0x1E, 0x25, 0x28,
-                                   0x31, 0x33, 0x34, 0x36, 0x3A, 0x3B, 0x4F };
+static const u8 overlays_4x3[] = { 0x07, 0x08, 0x0D, 0x0E, 0x0F, 0x10, 0x13, 0x14, 0x25, 0x28,
+                                   0x31, 0x33, 0x34, 0x36, 0x4F };
 
 void widescreen_overlay(s32 overlay) {
     s32 picture_4x3 = FALSE;
