@@ -49,14 +49,23 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 // - 0x13, Log Jam: its ground and the logs on it a 2D picture of the screen's size, under a sky drawn across the
 //   window.
 // - 0x14, Slot Synch: a stage of the screen's size, and the slot machines' reels past it.
+// - 0x16, Toadstool Titan: a room of the screen's size, and past 4:3 the crowd of Marios coming into it.
+// - 0x17, Aces High: four quarters, each a player's sky, its bank of cloud cut off at 4:3's edge, and past it the
+//   rainbow, the planes and the wind's streaks.
+// - 0x1E, Picture Imperfect: a picture of the screen's size, and past it the stage, the players cut in two at 4:3's
+//   edge and their stars.
 // - 0x25, Awful Tower: four quarters, each a player's tower, and the ground under them past 4:3.
 // - 0x28, Snowball Summit: its ice past 4:3 drawn in stripes, under a sky drawn across the window.
 // - 0x31, Vine With Me: a team's view above the other's, and past 4:3 the window's sides white with its leaves.
 // - 0x33, End of the Line: two views side by side, and the right one's desert past 4:3.
 // - 0x34, Bowser Toss: a player's half above the other's, and the wall between them past 4:3.
+// - 0x3A, Fowl Play: two halves side by side, and past 4:3 a strip of their sky and hills over black.
+// - 0x3B, Winner's Wheel: a black stage of the screen's size, and past 4:3 rows of Piranha Plants and a player seen
+//   close, cut off at its edge.
 // - 0x4F, a board's results on the star stage: its sky is a 2D picture of the screen's size, and the stage's 3D past
 //   4:3, confetti-covered, was drawn beside it over the black.
-static const u8 overlays_4x3[] = { 0x07, 0x08, 0x0D, 0x0E, 0x0F, 0x10, 0x13, 0x14, 0x25, 0x28, 0x31, 0x33, 0x34, 0x4F };
+static const u8 overlays_4x3[] = { 0x07, 0x08, 0x0D, 0x0E, 0x0F, 0x10, 0x13, 0x14, 0x16, 0x17, 0x1E,
+                                   0x25, 0x28, 0x31, 0x33, 0x34, 0x3A, 0x3B, 0x4F };
 
 void widescreen_overlay(s32 overlay) {
     s32 picture_4x3 = FALSE;
