@@ -71,7 +71,8 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   with Emscripten and in `CMakeLists.txt` on the desktop too. It draws a picture wider than 4:3 with Aspect Ratio
   Expand: `patches/widescreen.c` takes a camera's view to the window's edges and `patches/background.c` a board's
   background, through lib/mario-party-engine's `camera_view.c` and `board_back.c` (their headers say how), and
-  `us.toml`'s hooks in the sprite manager the board's HUD, the players' panels, to its left and right edges, through
+  `us.toml`'s hooks in the sprite manager the board's HUD, the players' panels, to its left and right edges, and a
+  picture as wide as the screen stretched over the window wherever the game puts it, through
   lib/mario-party-engine's `src/hud.cpp`, and its hooks in the wipe module draw an iris's, the star's and a fade's
   colour to them too, through its `src/wipe.cpp`. `us.toml` also makes pfDrawFonts's scissors the whole
   screen's (its comment says why). The board's camera stops where the wider picture reaches the map's edge
