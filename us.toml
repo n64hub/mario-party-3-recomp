@@ -45,16 +45,21 @@ text = "{ void mp_survey_goto(uint8_t*, gpr*, gpr*, gpr*); mp_survey_goto(rdram,
 # picture's bottom then draw past it, which on a console writes a few pixels into the next framebuffer's top rows,
 # under the overscan border, but in RT64 makes the frame as tall as the scissor: RT64 copies whole rows of it to RAM,
 # over the top of the next framebuffer, takes that one's RAM as changed and draws it from RAM, so an old frame can
-# flash up at 4:3 with black at its sides. Each of the function's two scissors stops at the picture's bottom instead.
+# flash up at 4:3 with black at its sides. Each of the function's two scissors is the whole screen's instead,
+# (0, 0, 320, 240): it stops at the picture's bottom, and at 320, not 319, since RT64 draws a rectangle of the whole
+# screen out to the window's edges only while it is as wide as every scissor in its framebuffer, and moves a
+# rectangle's right edge onto its scissor's a pixel from it. The next frame's clear (func_8001BF90_main's fill
+# rectangle of the background's colour), under the text's 319, would stay inside 4:3, so the window's sides would never
+# be cleared and would keep what earlier frames left there.
 [[patches.hook]]
 func = "pfDrawFonts"
 before_vram = 0x8004E07C
-text = "ctx->r2 = 0x004FC3C0;"
+text = "ctx->r2 = 0x005003C0;"
 
 [[patches.hook]]
 func = "pfDrawFonts"
 before_vram = 0x8004E644
-text = "ctx->r2 = 0x004FC3C0;"
+text = "ctx->r2 = 0x005003C0;"
 
 # The board's HUD at the picture's sides (lib/mario-party-engine/src/hud.cpp says how): the players' panels' places
 # and groups (the shared board's MBStatusPosSet(player, x, y) sets a panel's place, and mbStatusData, 0x6C bytes a
