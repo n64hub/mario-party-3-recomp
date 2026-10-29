@@ -114,3 +114,10 @@ text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 func = "func_800641C8_main"
 before_vram = 0x8006508C
 text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
+
+# A 4:3 picture's sides black (lib/mario-party-engine/src/wipe.cpp, mp_wipe_picture_sides): func_8001B0B4_main ends
+# the frame's last display list after its wipe and its text, the list's next command in v0, with its gDPFullSync.
+[[patches.hook]]
+func = "func_8001B0B4_main"
+before_vram = 0x8001BC88
+text = "{ gpr mp_wipe_picture_sides(uint8_t*, gpr); ctx->r2 = mp_wipe_picture_sides(rdram, ctx->r2); }"

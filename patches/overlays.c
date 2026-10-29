@@ -13,6 +13,8 @@
 #define HAS_BSS_SECTION 4
 
 extern u8 D_800962F0_main;
+// widescreen.c's: whether the scene an overlay plays is drawn at 4:3.
+void widescreen_overlay(s32 overlay);
 
 RECOMP_PATCH void func_8000B1A0_main(s32 arg0, u8 sectionFlags) {
     u8* textVramEnd;
@@ -77,4 +79,7 @@ RECOMP_PATCH void OvlLoad(s32 overlayIndex) {
     }
 
     D_800962F0_main = 0;
+
+    // @recomp Whether the scene is drawn at 4:3 (widescreen.c).
+    widescreen_overlay(overlayIndex);
 }
