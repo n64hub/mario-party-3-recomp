@@ -56,8 +56,8 @@ A gamepad, or the keyboard.
 
 Up to four people play four players, each with a pad of their own or the keyboard: open the menu (Esc), and on
 Controls press Assign players, then a button on each player's pad (or a key) in the players' order, and Confirm.
-Until then every pad and the keyboard play as one, as for a player alone. Who the computer plays is the game's
-own setting, as on a console.
+Until then every pad and the keyboard play as one, as for a player alone; after, the keyboard stays player 1's
+unless a player was given it. Who the computer plays is the game's own setting, as on a console.
 
 ## License
 
