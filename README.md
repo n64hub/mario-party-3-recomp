@@ -50,6 +50,15 @@ ninja -C build MarioParty3Recompiled
 The symbols in `syms/` are made from the decomp's own build of the game (`tools/build_decomp.sh`, which needs the ROM
 and Docker, then `tools/gen_syms.sh`). They only change when `lib/marioparty3` moves.
 
+## Controls
+
+A gamepad, or the keyboard.
+
+Up to four people play four players, each with a pad of their own or the keyboard: open the menu (Esc), and on
+Controls press Assign players, then a button on each player's pad (or a key) in the players' order, and Confirm.
+Until then every pad and the keyboard play as one, as for a player alone. Who the computer plays is the game's
+own setting, as on a console.
+
 ## License
 
 GPL-3.0 (`LICENSE`), as the recompilations it follows. The decomp in `lib/marioparty3` is its own project.
