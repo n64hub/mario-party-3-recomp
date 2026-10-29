@@ -16,6 +16,10 @@ N64Recomp-browser's `plays.jsonl` (game `mp3`), never a record here.
 The engine's process scheduler runs on threads on the page as on the desktop (`docs/processes.md`): the page has
 threads and C++ exceptions anyway, so it needs no Asyncify.
 
+RT64's render to RAM is off on the page, where each copy of a frame into RDRAM waits for the browser's readback and
+the game draws a frame in several RSP tasks: `src/main/main.cpp`, where the render context is made, says why the game
+can do without it.
+
 ## Build it
 
 On Linux with Docker, with the ROM at `roms/marioparty3.us.z64`:
