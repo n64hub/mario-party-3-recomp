@@ -29,7 +29,7 @@ regions are not supported.
 
 ## Getting it
 
-Prereleases for Windows (a zip: unzip it and run `MarioParty3Recompiled.exe` from that folder) and Linux on x86-64 (a
+Releases for Windows (a zip: unzip it and run `MarioParty3Recompiled.exe` from that folder) and Linux on x86-64 (a
 `.tar.gz`: extract it and run `MarioParty3Recompiled` in that folder) are on the
 [Releases page](https://github.com/n64hub/mario-party-3-recomp/releases), without the ROM: pick yours with Load ROM.
 The Linux build needs glibc 2.35 or newer (Ubuntu 22.04, Debian 12 or later), a Vulkan driver, and GTK 3 and FreeType,
