@@ -128,3 +128,20 @@ text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 func = "func_8001B0B4_main"
 before_vram = 0x8001BC88
 text = "{ gpr mp_wipe_picture_sides(uint8_t*, gpr); ctx->r2 = mp_wipe_picture_sides(rdram, ctx->r2); }"
+
+# The seas and floors widened in x as they are made (patches/widescreen.c, widen_object): each one's setup once its
+# stage is made, with its object in s0.
+[[patches.hook]]
+func = "func_8010B058_the_beat_goes_on"
+before_vram = 0x8010B0CC
+text = "{ void widescreen_beat_water(uint8_t*, recomp_context*); ctx->r4 = ctx->r16; widescreen_beat_water(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80106150_spotlight_swim"
+before_vram = 0x80106174
+text = "{ void widescreen_spotlight_floor(uint8_t*, recomp_context*); ctx->r4 = ctx->r16; widescreen_spotlight_floor(rdram, ctx); }"
+
+[[patches.hook]]
+func = "func_80105EE8_hand_line_sinker"
+before_vram = 0x80105F80
+text = "{ void widescreen_hand_line_grass(uint8_t*, recomp_context*); ctx->r4 = ctx->r16; widescreen_hand_line_grass(rdram, ctx); }"

@@ -150,3 +150,31 @@ void widescreen_overlay(s32 overlay) {
     }
     board_back_scene_widest(widest);
 }
+
+// The seas and floors of short_scenes that are widened in x as they are made, so that they reach a wide window's edges
+// (lib/mario-party-engine's board_back_stage_widened, which moves the scene's widest out with them): one with nothing
+// standing at its edges, which reads the same wider. A room's walls, a stage built for 4:3, a course the boats follow
+// and a painted backdrop keep their cap. us.toml's hooks call these in each one's setup, once the stage is made: the
+// game never writes these scales again (the object manager copies an object's scale onto its first model each frame, so
+// an object's is set for that one, and a model of its own, HmfModelData's, for the rest).
+static void widen_object(omObjData* object, f32 widest) {
+    object->scale.x *= board_back_stage_widened(widest);
+}
+
+// The Beat Goes On's water (file 0x410005), whose waves the game moves vertex by vertex, at x 0.
+void widescreen_beat_water(omObjData* water) {
+    widen_object(water, 1.8f);
+}
+
+// Spotlight Swim's floor (file 0x240000), at x 0.
+void widescreen_spotlight_floor(omObjData* floor) {
+    widen_object(floor, 1.55f);
+}
+
+// Hand, Line and Sinker's grass (files 0x220000 and 0x220003, the first model and the third), around the pond (0x220001).
+void widescreen_hand_line_grass(omObjData* stage) {
+    f32 times = board_back_stage_widened(2.05f);
+
+    stage->scale.x *= times;
+    HmfModelData[stage->model[2]].scale.x *= times;
+}
