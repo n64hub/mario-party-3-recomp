@@ -113,6 +113,10 @@ static const u8 overlays_4x3[] = { 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0C, 0x0D, 0x0
 // where its stage ends at its narrowest across the minigame's play, at a 32:9 window. The engine draws one to the
 // window's edges up to that width and black past it (board_back_scene_widest), the camera's view stopping there, so a
 // window no wider shows it as before, and a wider one shows black bars rather than the frame's clear around the stage.
+// None has its stage made wider in x past its cap, as Mario Party and Mario Party 2 do with a few seas: Hand, Line and
+// Sinker's grass, Spotlight Swim's floor and The Beat Goes On's water are each one model with the pond, the pool or
+// the island in it, which stretched as much, and the others are rooms, backdrops or courses with something at their
+// edges.
 // - 0x01, Hand, Line and Sinker: the grass platform's far edge, 2.05, past it the clear's blue.
 // - 0x03, Spotlight Swim: the brick floor's far edge, 1.55, and past it the spotlights drawn out over the clear.
 // - 0x15, Treadmill Grill: the floor's far corner, off the middle, 1.6 on its left.
@@ -149,32 +153,4 @@ void widescreen_overlay(s32 overlay) {
         }
     }
     board_back_scene_widest(widest);
-}
-
-// The seas and floors of short_scenes that are widened in x as they are made, so that they reach a wide window's edges
-// (lib/mario-party-engine's board_back_stage_widened, which moves the scene's widest out with them): one with nothing
-// standing at its edges, which reads the same wider. A room's walls, a stage built for 4:3, a course the boats follow
-// and a painted backdrop keep their cap. us.toml's hooks call these in each one's setup, once the stage is made: the
-// game never writes these scales again (the object manager copies an object's scale onto its first model each frame, so
-// an object's is set for that one, and a model of its own, HmfModelData's, for the rest).
-static void widen_object(omObjData* object, f32 widest) {
-    object->scale.x *= board_back_stage_widened(widest);
-}
-
-// The Beat Goes On's water (file 0x410005), whose waves the game moves vertex by vertex, at x 0.
-void widescreen_beat_water(omObjData* water) {
-    widen_object(water, 1.8f);
-}
-
-// Spotlight Swim's floor (file 0x240000), at x 0.
-void widescreen_spotlight_floor(omObjData* floor) {
-    widen_object(floor, 1.55f);
-}
-
-// Hand, Line and Sinker's grass (files 0x220000 and 0x220003, the first model and the third), around the pond (0x220001).
-void widescreen_hand_line_grass(omObjData* stage) {
-    f32 times = board_back_stage_widened(2.05f);
-
-    stage->scale.x *= times;
-    HmfModelData[stage->model[2]].scale.x *= times;
 }
