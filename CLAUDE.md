@@ -68,20 +68,20 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Microcodes.** Graphics go to RT64. Audio: n_aspMain, recompiled by RSPRecomp from `n_aspMain.us.toml` (its
   header says how its layout was found).
 - **Saves.** EEPROM, 16 Kbit. `main.cpp` declares `SaveType::Eep16k`; the runtime keeps it in `saves/`.
-- **Drawing.** RT64 interpolates the game's frames to the display's rate with no tags in the game's display lists. The
+-  **Drawing.** RT64 interpolates the game's frames to the display's rate with no tags in the game's display lists. The
   game draws a frame in several RSP tasks, which RT64 interpolates as one game frame with RT64_GAME_FRAME_WORKLOADS, on
   with Emscripten and in `CMakeLists.txt` on the desktop too. It draws a picture wider than 4:3 with Aspect Ratio
   Expand: `patches/widescreen.c` takes a camera's view to the window's edges and `patches/background.c` a board's
   background, through lib/mario-party-engine's `camera_view.c` and `board_back.c` (their headers say how), and
   `us.toml`'s hooks in the sprite manager the board's HUD, the players' panels, to its left and right edges, and a
-  picture as wide as the screen stretched over the window wherever the game puts it, through
-  lib/mario-party-engine's `src/hud.cpp`, and its hooks in the wipe module draw an iris's, the star's and a fade's
-  colour to them too, through its `src/wipe.cpp`. `us.toml` also makes pfDrawFonts's scissors the whole
-  screen's (its comment says why). The board's camera stops where the wider picture reaches the map's edge
+  picture as wide as the screen stretched over the window wherever the game puts it (kept to 4:3 in a scene the game
+  draws at 4:3), through lib/mario-party-engine's `src/hud.cpp`, and its hooks in the wipe module draw an iris's, the
+  star's and a fade's colour to them too, through its `src/wipe.cpp`. `us.toml` also makes pfDrawFonts's scissors the
+  whole screen's (its comment says why). The board's camera stops where the wider picture reaches the map's edge
   (`patches/background.c`, with the engine's `src/aspect_ratio.cpp`). A map no wider than 320 (a board's opening,
-  opboard's, 5x5 tiles) keeps black at its sides, the game having nothing beside it to draw, and its 3D and the HUD
-  keep inside 4:3 with it (`board_back.c`). So does a scene `patches/widescreen.c` lists as drawn at 4:3 (a board's
-  results on the star stage and nineteen minigames), black drawn over the window's sides at each frame's end (`us.toml`,
-  the engine's `src/wipe.cpp`).
+  opboard's, 5x5 tiles) keeps black at its sides, the game having nothing beside it to draw, and its 3D and the HUD keep
+  inside 4:3 with it (`board_back.c`). So does a scene `patches/widescreen.c` lists as drawn at 4:3 (a board's results
+  on the star stage and thirty-three minigames), black drawn over the window's sides at each frame's end (`us.toml`, the
+  engine's `src/wipe.cpp`).
 - **Input.** RecompFrontend's default bindings. Keyboard: WASD the stick, Space A, Left Shift B, Q Z, R R, E L,
   Enter Start, the arrows the C buttons.
