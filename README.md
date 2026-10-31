@@ -73,6 +73,15 @@ who plays which, open the menu (Esc), and on Controls press Assign players, then
 key) in the players' order, and Confirm; after, the keyboard stays player 1's unless a player was given it. As on a
 console, a player without a pad is the computer's, and who else the computer plays is the game's own setting.
 
+## Options
+
+The menu (Esc) holds the settings, and its General tab ends with two for the boards, the same in each of the Mario
+Party recomps. Each is Original by default, which plays as the console does:
+
+- **Board Movement**, Fast: the players walk from space to space in half the time, as Mario Party 3's own Fast walking
+  speed does, whatever the walking speed in a game's pause menu says.
+- **Map Scrolling**, Fast: the view moves twice as fast when you look around a board's map.
+
 ## Mods
 
 The desktop build loads N64Recomp mods (`.nrm`) made for it (`game_id = "marioparty3"`): in the launcher, before Start

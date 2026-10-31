@@ -128,3 +128,86 @@ text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 func = "func_8001B0B4_main"
 before_vram = 0x8001BC88
 text = "{ gpr mp_wipe_picture_sides(uint8_t*, gpr); ctx->r2 = mp_wipe_picture_sides(rdram, ctx->r2); }"
+
+# Board Movement and Map Scrolling (lib/mario-party-engine/src/board_options.cpp), Original by default.
+# Fast board movement: the game's own walking speed (GwSystem's walk_speed, 0x800CD06D: 0 Fast, 1 Normal, 2 Slow, as
+# the pause menu sets it) read as Fast where a walk takes its pace from it, whatever it holds: the board's MBMain (a
+# step's frames, a jump's, a jump's speed), the duel board's func_800FD6F4_name_81, w10's func_80106908_w10, and each
+# board's sleep between a walk's steps. The pause menu still shows and saves the player's own.
+[[patches.hook]]
+func = "MBMain_0011069C"
+before_vram = 0x800FD23C
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r2 = 0; }"
+
+[[patches.hook]]
+func = "MBMain_0011069C"
+before_vram = 0x800FD2D8
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "MBMain_0011069C"
+before_vram = 0x800FD3DC
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_800FD6F4_name_81"
+before_vram = 0x800FDDF8
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r2 = 0; }"
+
+[[patches.hook]]
+func = "func_800FD6F4_name_81"
+before_vram = 0x800FDF18
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80106908_w10"
+before_vram = 0x80106A58
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80106908_w10"
+before_vram = 0x80106B60
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80108A38_ChillyWaters"
+before_vram = 0x80108A54
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80108570_w02"
+before_vram = 0x8010858C
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80108734_w03"
+before_vram = 0x80108750
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80108558_w04"
+before_vram = 0x80108574
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_801085B4_w05"
+before_vram = 0x801085D0
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+[[patches.hook]]
+func = "func_80108580_w06"
+before_vram = 0x8010859C
+text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
+
+# Fast map scrolling: the map's view (R at the dice block) sets the board camera's speed as it starts, which the
+# camera follows the stick's target at: twice that. A board's is the shared board's func_8010024C_shared_board_00113E6C
+# (MBCameraSpeedSet, f12, 4.0), a duel board's func_801008E8_name_81 (MBDCameraSpeedSet, 3.5).
+[[patches.hook]]
+func = "func_8010024C_shared_board_00113E6C"
+before_vram = 0x80100350
+text = "{ int mp_map_scrolling_fast(void); if (mp_map_scrolling_fast()) ctx->f12.fl *= 2.0f; }"
+
+[[patches.hook]]
+func = "func_801008E8_name_81"
+before_vram = 0x801009C8
+text = "{ int mp_map_scrolling_fast(void); if (mp_map_scrolling_fast()) ctx->f12.fl *= 2.0f; }"
