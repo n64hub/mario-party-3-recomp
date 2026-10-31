@@ -199,8 +199,14 @@ func = "func_80108580_w06"
 before_vram = 0x8010859C
 text = "{ int mp_board_movement_fast(void); if (mp_board_movement_fast()) ctx->r3 = 0; }"
 
-# Fast map scrolling: func_801008E8_name_81, the map's view, sets the board camera's speed (MBDCameraSpeedSet, f12)
-# to 3.5 as it starts, which the camera follows the stick's target at: twice that.
+# Fast map scrolling: the map's view (R at the dice block) sets the board camera's speed as it starts, which the
+# camera follows the stick's target at: twice that. A board's is the shared board's func_8010024C_shared_board_00113E6C
+# (MBCameraSpeedSet, f12, 4.0), a duel board's func_801008E8_name_81 (MBDCameraSpeedSet, 3.5).
+[[patches.hook]]
+func = "func_8010024C_shared_board_00113E6C"
+before_vram = 0x80100350
+text = "{ int mp_map_scrolling_fast(void); if (mp_map_scrolling_fast()) ctx->f12.fl *= 2.0f; }"
+
 [[patches.hook]]
 func = "func_801008E8_name_81"
 before_vram = 0x801009C8
