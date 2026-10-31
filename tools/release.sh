@@ -19,8 +19,9 @@
 # Linux: in the image tools/docker/Dockerfile.linux, Ubuntu 22.04, so the binary needs glibc 2.35 or newer. It carries
 # the libSDL2 it was built with and libatomic (not on every system) beside the binary (RUNPATH $ORIGIN), as the Windows
 # zip carries SDL2.dll, and is a .tar.gz so the binary stays executable. GTK 3, FreeType and a Vulkan driver are the
-# system's. Run from another folder, the program works from its own (src/main/main.cpp).
-# Both hold assets/ (the launcher's), recompcontrollerdb.txt and LICENSE beside the program.
+# system's.
+# Both hold assets/ (the launcher's), recompcontrollerdb.txt and LICENSE beside the program, which works from its own
+# folder when it is started from another (src/main/main.cpp).
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"

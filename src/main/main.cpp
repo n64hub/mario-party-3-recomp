@@ -58,7 +58,7 @@
 
 #include "icon_bytes.h"
 
-const std::string version_string = "0.2.1";
+const std::string version_string = "0.2.2";
 
 template<typename... Ts>
 void exit_error(const char* str, Ts ...args) {
@@ -434,14 +434,23 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
-#if defined(__linux__) && !defined(__EMSCRIPTEN__)
+#if (defined(__linux__) || defined(_WIN32)) && !defined(__EMSCRIPTEN__)
     // RecompFrontend finds assets/ (and portable.txt) in the working directory, which a desktop launcher or a shell
     // elsewhere doesn't set to the release's folder: when assets/ isn't there, work from the program's own folder.
     // A dev build run from the repo's root keeps the root, which is where assets/ is.
     {
         std::error_code ec;
         if (!std::filesystem::is_directory("assets", ec)) {
+#ifdef _WIN32
+            // Windows' longest path, so GetModuleFileNameW never cuts it short; it returns 0 if it fails, and an empty
+            // path has no assets/. ec still holds is_directory's "not found", which read_symlink clears on Linux.
+            std::wstring exe_path(32768, L'\0');
+            exe_path.resize(GetModuleFileNameW(nullptr, exe_path.data(), static_cast<DWORD>(exe_path.size())));
+            std::filesystem::path exe_dir = std::filesystem::path(exe_path).parent_path();
+            ec.clear();
+#else
             std::filesystem::path exe_dir = std::filesystem::read_symlink("/proc/self/exe", ec).parent_path();
+#endif
             if (!ec && std::filesystem::is_directory(exe_dir / "assets", ec)) {
                 std::filesystem::current_path(exe_dir, ec);
             }
