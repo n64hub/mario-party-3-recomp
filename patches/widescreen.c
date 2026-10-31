@@ -113,6 +113,10 @@ static const u8 overlays_4x3[] = { 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0C, 0x0D, 0x0
 // where its stage ends at its narrowest across the minigame's play, at a 32:9 window. The engine draws one to the
 // window's edges up to that width and black past it (board_back_scene_widest), the camera's view stopping there, so a
 // window no wider shows it as before, and a wider one shows black bars rather than the frame's clear around the stage.
+// None has its stage made wider in x past its cap, as Mario Party and Mario Party 2 do with a few seas: Hand, Line and
+// Sinker's grass, Spotlight Swim's floor and The Beat Goes On's water are each one model with the pond, the pool or
+// the island in it, which stretched as much, and the others are rooms, backdrops or courses with something at their
+// edges.
 // - 0x01, Hand, Line and Sinker: the grass platform's far edge, 2.05, past it the clear's blue.
 // - 0x03, Spotlight Swim: the brick floor's far edge, 1.55, and past it the spotlights drawn out over the clear.
 // - 0x15, Treadmill Grill: the floor's far corner, off the middle, 1.6 on its left.
