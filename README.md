@@ -67,10 +67,19 @@ prerelease (the script's header says more).
 
 A gamepad, or the keyboard.
 
-Up to four people play four players, each with a pad of their own or the keyboard: open the menu (Esc), and on
-Controls press Assign players, then a button on each player's pad (or a key) in the players' order, and Confirm.
-Until then every pad and the keyboard play as one, as for a player alone; after, the keyboard stays player 1's
-unless a player was given it. Who the computer plays is the game's own setting, as on a console.
+Up to four people play four players, each with a pad of their own or the keyboard: each pad plays a player of its own
+with no setup, in the order the pads were plugged in, and the keyboard plays player 1 beside the first pad. To choose
+who plays which, open the menu (Esc), and on Controls press Assign players, then a button on each player's pad (or a
+key) in the players' order, and Confirm; after, the keyboard stays player 1's unless a player was given it. As on a
+console, a player without a pad is the computer's, and who else the computer plays is the game's own setting.
+
+## Mods
+
+The desktop build loads N64Recomp mods (`.nrm`) made for it (`game_id = "marioparty3"`): in the launcher, before Start
+Game, open Mods and press Install Mods, or drop the file onto the window, or put it in the `mods` folder
+(`%LOCALAPPDATA%\MarioParty3Recompiled\mods` on Windows, `~/.config/MarioParty3Recompiled/mods` on Linux), and turn it
+on in the Mods list. The page in a browser loads no mods. How to make one, and what a mod can change:
+[mario-party-engine's docs/mods.md](https://github.com/n64hub/mario-party-engine/blob/main/docs/mods.md).
 
 ## License
 
