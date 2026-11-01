@@ -68,7 +68,7 @@ text = "ctx->r2 = 0x005003C0;"
 # addresses are HuSprGrpData's) and each sprite drawn (func_800579E4_main(gfx, sprite), every path out of it through
 # 0x800589B8 with gfx in s5), with its width on the screen: its frame's width (a u16 at 0x4 of its frame, 12 bytes
 # each, from the frames its data at 0x84 points to, by its frame's index at 0x90) by its x scale (a float at 0x18), as
-# func_800579E4_main reads them.
+# func_800579E4_main reads them, and where it is on the screen (two floats at 0x4, x and y).
 [[patches.hook]]
 func = "MBStatusPosSet"
 before_vram = 0x800F4874
@@ -87,12 +87,43 @@ text = "{ void mp_hud_reset(uint8_t*); mp_hud_reset(rdram); }"
 [[patches.hook]]
 func = "func_800579E4_main"
 before_vram = 0x800579E4
-text = "{ void mp_hud_sprite_width(uint8_t*, float); void mp_hud_sprite_start(uint8_t*, gpr, gpr); gpr s = ctx->r5; gpr data = (gpr)(int32_t)MEM_W(0x84, s); if (data != 0) { gpr frame = (gpr)(int32_t)MEM_W(0x0, data) + MEM_H(0x90, s) * 12; union { uint32_t u; float f; } scale; scale.u = (uint32_t)MEM_W(0x18, s); mp_hud_sprite_width(rdram, MEM_HU(0x4, frame) * scale.f); } mp_hud_sprite_start(rdram, ctx->r4, ctx->r5); }"
+text = "{ void mp_hud_sprite_width(uint8_t*, float); void mp_hud_sprite_at(uint8_t*, float, float); void mp_hud_sprite_start(uint8_t*, gpr, gpr); gpr s = ctx->r5; gpr data = (gpr)(int32_t)MEM_W(0x84, s); if (data != 0) { gpr frame = (gpr)(int32_t)MEM_W(0x0, data) + MEM_H(0x90, s) * 12; union { uint32_t u; float f; } scale; scale.u = (uint32_t)MEM_W(0x18, s); mp_hud_sprite_width(rdram, MEM_HU(0x4, frame) * scale.f); } union { uint32_t u; float f; } x, y; x.u = (uint32_t)MEM_W(0x4, s); y.u = (uint32_t)MEM_W(0x8, s); mp_hud_sprite_at(rdram, x.f, y.f); mp_hud_sprite_start(rdram, ctx->r4, ctx->r5); }"
 
 [[patches.hook]]
 func = "func_800579E4_main"
 before_vram = 0x800589B8
 text = "{ void mp_hud_sprite_end(uint8_t*, gpr); mp_hud_sprite_end(rdram, ctx->r21); }"
+
+# A sprite func_800579E4_main draws through a matrix of its place, its rotation and its scale (bit 30 of its word at
+# 0x24 set: the items a panel shows big at its item select, MBStatusItemSprCreate's, and one carried out of it) is two
+# triangles, which RT64's rectangle alignment doesn't move: it loads the sprite's x (a float at 0x4) into f4 at
+# 0x80058710 and takes 160 from it for the matrix's translation, so that x is moved as far as hud.cpp aligns the
+# sprite's rectangles.
+[[patches.hook]]
+func = "func_800579E4_main"
+before_vram = 0x80058714
+text = "{ float mp_hud_sprite_shift(uint8_t*); ctx->f4.fl += mp_hud_sprite_shift(rdram); }"
+
+# The item a player uses carried out of their panel by their character's hand (hud.cpp, mp_hud_item_at and
+# mp_hud_hand_read). MBStatusItemPosSet(player, item, x, y) moves item number item, member item + 2 of the panel's
+# group (its members' addresses from 0x10), whose place in the group is two floats at 0x48. The hand is the picture
+# of the character whose turn it is (s8 at 0x800CD067; GwPlayer, 0x38 bytes a player from 0x800D1108, has the
+# character at 0x3): DataRead(file) reads it, files 0x6A on by character, and func_80055024_main(group, member,
+# sprite, ...) next sets it as the picture of the hand's group.
+[[patches.hook]]
+func = "MBStatusItemPosSet"
+before_vram = 0x800F688C
+text = "{ void mp_hud_item_at(uint8_t*, int32_t, gpr, gpr); int32_t p = (int32_t)ctx->r4; int32_t i = (int32_t)ctx->r5; if (p >= 0 && p < 4 && i >= 0 && i < 3) { int16_t g = MEM_H(0xA, (gpr)(int32_t)0x801057E0 + p * 0x6C); gpr group = (gpr)(int32_t)MEM_W(g * 4, (gpr)(int32_t)0x800CDD70); gpr s = (gpr)(int32_t)MEM_W(0x10 + (i + 2) * 4, group); mp_hud_item_at(rdram, p, s, s + 0x48); } }"
+
+[[patches.hook]]
+func = "DataRead"
+before_vram = 0x80009C10
+text = "{ void mp_hud_hand_read(uint8_t*, int32_t); uint32_t file = (uint32_t)ctx->r4; int8_t p = (int8_t)MEM_B(0, (gpr)(int32_t)0x800CD067); if (file >= 0x6A && file <= 0x71 && p >= 0 && p < 4 && MEM_BU(p * 0x38 + 3, (gpr)(int32_t)0x800D1108) == file - 0x6A) mp_hud_hand_read(rdram, p); }"
+
+[[patches.hook]]
+func = "func_80055024_main"
+before_vram = 0x80055024
+text = "{ void mp_hud_hand_group(uint8_t*, gpr); mp_hud_hand_group(rdram, (gpr)(int32_t)MEM_W((int16_t)ctx->r4 * 4, (gpr)(int32_t)0x800CDD70)); }"
 
 # A screen wipe past 4:3 (lib/mario-party-engine/src/wipe.cpp says how): the wipe module's whole-screen rectangle
 # (func_8006231C_main(gfx, alpha), out through 0x800623E8), and a shape wipe's rectangles around its square
