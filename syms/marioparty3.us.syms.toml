@@ -911,7 +911,7 @@ functions = [
     { name = "func_80050DDC_main", vram = 0x80050DDC, size = 0x9C },
     { name = "func_8001F6BC_main", vram = 0x8001F6BC, size = 0x3C },
     { name = "alSndpAllocate", vram = 0x8006D250, size = 0xC8 },
-    { name = "func_8007D740_main", vram = 0x8007D740, size = 0x164 },
+    { name = "osViSetSpecialFeatures", vram = 0x8007D740, size = 0x164 },
     { name = "func_8001D638_main", vram = 0x8001D638, size = 0x23C },
     { name = "func_8003A9C8_main", vram = 0x8003A9C8, size = 0x2D4 },
     { name = "func_80033128_main", vram = 0x80033128, size = 0x1AC },
