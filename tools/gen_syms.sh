@@ -8,6 +8,12 @@
 # and analyzed as a static, and its bytes aren't code until they are decoded: so it is given its size here, as a
 # function us.toml can stub.
 #
+# It also gives libultra's osViSetSpecialFeatures (src/2.0L/io/visetspecial.c) only its address for a name, so
+# N64Recomp recompiled it instead of calling the runtime's, and the game's osViSetSpecialFeatures(OS_VI_GAMMA_OFF) at
+# boot only wrote the game's own copy of the VI's registers. The runtime's VI kept the gamma correction the game's mode
+# (osViModeTable's NTSC LAN1) turns on, and RT64 drew every frame through it, washing out everything but the 3D. So it
+# is named here, and N64Recomp calls the runtime's.
+#
 # Usage: tools/gen_syms.sh [cmake arguments for tools/build_n64recomp.sh]
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -19,3 +25,5 @@ bash tools/build_n64recomp.sh "$@"
 if command -v py > /dev/null; then python=(py -3); else python=(python3); fi
 "${python[@]}" -I lib/mario-party-engine/tools/gen_syms.py build/n64recomp/N64Recomp "$elf" "$rom" syms/marioparty3.us \
     'function_sizes = [ { name = "func_80071C8C_main", size = 0x344 } ]'
+sed -i 's/{ name = "func_8007D740_main", vram = 0x8007D740,/{ name = "osViSetSpecialFeatures", vram = 0x8007D740,/' \
+    syms/marioparty3.us.syms.toml
