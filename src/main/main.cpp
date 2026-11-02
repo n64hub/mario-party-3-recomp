@@ -58,7 +58,7 @@
 
 #include "icon_bytes.h"
 
-const std::string version_string = "0.2.8";
+const std::string version_string = "0.2.9";
 
 template<typename... Ts>
 void exit_error(const char* str, Ts ...args) {
