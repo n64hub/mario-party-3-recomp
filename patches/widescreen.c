@@ -40,9 +40,9 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 // widescreen_overlay as each loads): the engine keeps black at the window's sides while one plays (board_back.h's
 // board_back_scene_widest, at 4:3), its src/wipe.cpp drawing it over whatever the scene's 3D reaches past 4:3 at the end of each
 // frame (us.toml's hook at func_8001B0B4_main's gDPFullSync), and the camera's view and the HUD stay inside 4:3.
-// - 0x05, Crazy Cogs: the wooden floor, with its screws and its broken planks, is a 2D picture of the screen's size, and
-//   the gears and the panel the lone player turns them from are 3D on it. Stretched over a wide window, the floor's
-//   picture parted from the gears, and the screws and planks around the big gear drifted away from it.
+// - 0x05, Crazy Cogs: the wooden floor with its screws and broken planks, the gears on it and the panel the lone player
+//   turns them from fill the screen. Stretched over a wide window, the big gear was a wide ellipse and the panel sat away
+//   from it.
 // - 0x06, Hide and Sneak: the forest and the path past the stage's curtains are a 2D picture of the screen's size, and
 //   so is the tray the players' buttons sit in. Stretched over a wide window, the path's hiding places moved out from
 //   the stump, the rock and the house standing on them, and the tray from its buttons.
