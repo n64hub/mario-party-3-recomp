@@ -95,6 +95,12 @@ set(RECOMPINPUT_SINGLE_PLAYER_UNTIL_ASSIGNED ON)
 # And until then each pad plays a port of its own, in the order they were connected, the keyboard port 1
 # (RecompFrontend-web's option): four people with four pads play four players without assigning them.
 set(RECOMPINPUT_PADS_IN_ORDER ON)
+# The engine draws black over a 4:3 scene's sides (its wipe module, at each frame's end) under an extended scissor
+# reaching far past the frame's edges, which RT64 took as the frame's width, and on such a frame drew what covers the
+# screen's width stretched to the window's: Eatsa Pizza's plate and pizza across a wide window, no black beside them,
+# and Crazy Cogs' players and planks over the black. RT64_SCISSOR_INSIDE_FRAMEBUFFER, on with Emscripten and here
+# too, counts it only to the frame's edges.
+set(RT64_SCISSOR_INSIDE_FRAMEBUFFER ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)
