@@ -40,6 +40,9 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 // widescreen_overlay as each loads): the engine keeps black at the window's sides while one plays (board_back.h's
 // board_back_scene_widest, at 4:3), its src/wipe.cpp drawing it over whatever the scene's 3D reaches past 4:3 at the end of each
 // frame (us.toml's hook at func_8001B0B4_main's gDPFullSync), and the camera's view and the HUD stay inside 4:3.
+// - 0x05, Crazy Cogs: the wooden floor, with its screws and its broken planks, is a 2D picture of the screen's size, and
+//   the gears and the panel the lone player turns them from are 3D on it. Stretched over a wide window, the floor's
+//   picture parted from the gears, and the screws and planks around the big gear drifted away from it.
 // - 0x06, Hide and Sneak: the forest and the path past the stage's curtains are a 2D picture of the screen's size, and
 //   so is the tray the players' buttons sit in. Stretched over a wide window, the path's hiding places moved out from
 //   the stump, the rock and the house standing on them, and the tray from its buttons.
@@ -105,9 +108,9 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 // - 0x7A, the opening and the title: the story's pictures and the title's, its logo and the characters, are 2D pictures
 //   of the screen's size. Stretched over a wide window, the title's logo and characters were drawn as much wider as the
 //   window is.
-static const u8 overlays_4x3[] = { 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13, 0x14,
-                                   0x16, 0x17, 0x1D, 0x1E, 0x25, 0x27, 0x28, 0x2A, 0x2B, 0x30, 0x31, 0x32, 0x33, 0x34,
-                                   0x35, 0x36, 0x38, 0x39, 0x3A, 0x3B, 0x3D, 0x3E, 0x42, 0x43, 0x45, 0x4F, 0x7A };
+static const u8 overlays_4x3[] = { 0x05, 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13,
+                                   0x14, 0x16, 0x17, 0x1D, 0x1E, 0x25, 0x27, 0x28, 0x2A, 0x2B, 0x30, 0x31, 0x32, 0x33,
+                                   0x34, 0x35, 0x36, 0x38, 0x39, 0x3A, 0x3B, 0x3D, 0x3E, 0x42, 0x43, 0x45, 0x4F, 0x7A };
 
 // The minigames whose 3D ends short of a wide window's edges, and the widest each is drawn, its width over its height:
 // where its stage ends at its narrowest across the minigame's play, at a 32:9 window. The engine draws one to the
