@@ -153,6 +153,43 @@ func = "func_800641C8_main"
 before_vram = 0x8006508C
 text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 
+# A 3D model's parts paired with their own between the game's frames (lib/mario-party-engine/src/model_ids.cpp says
+# how). func_8001B0B4_main walks the models, s3 the slot of the one whose parts func_80023404_main(data, ...) queues
+# (from 0x8001BA74, its data in s2). func_80024DF0_main queues a part, its place in the queue in a1 and its part number
+# in s3, from 0x8002507C. func_800250D4_main draws the queue: each part's gSPMatrix from 0x8002558C, at s0, the list's
+# next command (0x800D1FF4) already past it, with the part's place (s1, of 0x58 bytes from the queue's start at
+# 0x800CC0BC) and its matrix (at 0x44), then its display list through func_80024814_main, back at 0x800255C0. The
+# frame's number is at 0x800D20AC, and its display list starts at 0x800D1FF8, 0x800D5306 commands long.
+[[patches.hook]]
+func = "func_8001B0B4_main"
+before_vram = 0x8001BA74
+text = "{ void mp_model_slot(uint8_t*, int32_t, gpr); mp_model_slot(rdram, (int32_t)ctx->r19, ctx->r18); }"
+
+[[patches.hook]]
+func = "func_8001B0B4_main"
+before_vram = 0x8001BA7C
+text = "{ void mp_model_slot_end(uint8_t*); mp_model_slot_end(rdram); }"
+
+[[patches.hook]]
+func = "func_80024DF0_main"
+before_vram = 0x8002507C
+text = "{ void mp_model_queued(uint8_t*, int32_t, int32_t); mp_model_queued(rdram, (int16_t)ctx->r5, (int16_t)ctx->r19); }"
+
+[[patches.hook]]
+func = "func_800250D4_main"
+before_vram = 0x800250D4
+text = "{ void mp_model_draw(uint8_t*); mp_model_draw(rdram); }"
+
+[[patches.hook]]
+func = "func_800250D4_main"
+before_vram = 0x8002558C
+text = "{ gpr mp_model_push(uint8_t*, gpr, int32_t, gpr, int32_t, gpr, int32_t); gpr queue = (gpr)(int32_t)MEM_W(0, (gpr)(int32_t)0x800CC0BC); ctx->r16 = mp_model_push(rdram, ctx->r16, (int32_t)(ctx->r17 - queue) / 0x58, (gpr)(int32_t)MEM_W(0x44, ctx->r17), (int32_t)MEM_W(0, (gpr)(int32_t)0x800D20AC), (gpr)(int32_t)MEM_W(0, (gpr)(int32_t)0x800D1FF8), MEM_HU(0, (gpr)(int32_t)0x800D5306) * 8); MEM_W(0, (gpr)(int32_t)0x800D1FF4) = (int32_t)(ctx->r16 + 8); }"
+
+[[patches.hook]]
+func = "func_800250D4_main"
+before_vram = 0x800255C0
+text = "{ void mp_model_pop(uint8_t*, gpr); mp_model_pop(rdram, (gpr)(int32_t)0x800D1FF4); }"
+
 # A 4:3 picture's sides black (lib/mario-party-engine/src/wipe.cpp, mp_wipe_picture_sides): func_8001B0B4_main ends
 # the frame's last display list after its wipe and its text, the list's next command in v0, with its gDPFullSync.
 [[patches.hook]]

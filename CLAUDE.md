@@ -68,7 +68,9 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Microcodes.** Graphics go to RT64. Audio: n_aspMain, recompiled by RSPRecomp from `n_aspMain.us.toml` (its
   header says how its layout was found).
 - **Saves.** EEPROM, 16 Kbit. `main.cpp` declares `SaveType::Eep16k`; the runtime keeps it in `saves/`.
--  **Drawing.** RT64 interpolates the game's frames to the display's rate with no tags in the game's display lists. The
+-  **Drawing.** RT64 interpolates the game's frames to the display's rate. The game's display lists have no tags of
+  their own: `us.toml`'s hooks in the model walk and the draw of its queue tag each 3D model's parts with an ID of their
+  own, through lib/mario-party-engine's `src/model_ids.cpp`, and RT64 pairs whatever else the game draws by itself. The
   game draws a frame in several RSP tasks, which RT64 interpolates as one game frame with RT64_GAME_FRAME_WORKLOADS, on
   with Emscripten and in `CMakeLists.txt` on the desktop too. It draws a picture wider than 4:3 with Aspect Ratio
   Expand: `patches/widescreen.c` takes a camera's view to the window's edges and `patches/background.c` a board's
