@@ -57,6 +57,9 @@
 #endif
 
 #include "icon_bytes.h"
+#if defined(__linux__)
+#include "window_icon_bmp.h"
+#endif
 
 const std::string version_string = "0.2.13";
 
@@ -127,6 +130,15 @@ ultramodern::renderer::WindowHandle create_window(ultramodern::gfx_callbacks_t::
     if (window == nullptr) {
         exit_error("Failed to create window: %s\n", SDL_GetError());
     }
+
+#if defined(__linux__)
+    // On Windows SDL gives the window the executable's icon (icons/app.rc). Elsewhere the window has none until it is
+    // given one: icons/icon.bmp, built in (CMakeLists.txt; tools/icon.py makes it).
+    if (SDL_Surface* icon = SDL_LoadBMP_RW(SDL_RWFromConstMem(window_icon_bmp, (int)window_icon_bmp_size), 1)) {
+        SDL_SetWindowIcon(window, icon);
+        SDL_FreeSurface(icon);
+    }
+#endif
 
     SDL_SysWMinfo wmInfo;
     SDL_VERSION(&wmInfo.version);

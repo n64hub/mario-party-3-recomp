@@ -254,7 +254,7 @@ target_include_directories(MarioParty3Recompiled PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-# The launcher's thumbnail: text only (icons/512.png), no art from the game.
+# The launcher's thumbnail (icons/512.png, drawn by tools/icon.py from icons/icon.svg): no art from the game.
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icon_bytes.c ${CMAKE_CURRENT_BINARY_DIR}/icon_bytes.h
     COMMAND file_to_c ${CMAKE_SOURCE_DIR}/icons/512.png icon_bytes ${CMAKE_CURRENT_BINARY_DIR}/icon_bytes.c ${CMAKE_CURRENT_BINARY_DIR}/icon_bytes.h
     DEPENDS ${CMAKE_SOURCE_DIR}/icons/512.png
@@ -350,6 +350,13 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     find_package(Threads REQUIRED)
 
     target_link_libraries(MarioParty3Recompiled PRIVATE "-latomic -static-libstdc++" ${CMAKE_DL_LIBS} Threads::Threads)
+    # The window's icon, built in (SDL_SetWindowIcon in src/main/main.cpp).
+    add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/window_icon_bmp.c ${CMAKE_CURRENT_BINARY_DIR}/window_icon_bmp.h
+        COMMAND file_to_c ${CMAKE_SOURCE_DIR}/icons/icon.bmp window_icon_bmp
+            ${CMAKE_CURRENT_BINARY_DIR}/window_icon_bmp.c ${CMAKE_CURRENT_BINARY_DIR}/window_icon_bmp.h
+        DEPENDS ${CMAKE_SOURCE_DIR}/icons/icon.bmp file_to_c
+    )
+    target_sources(MarioParty3Recompiled PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/window_icon_bmp.c)
 endif()
 
 # dxc, for recompui's shaders
