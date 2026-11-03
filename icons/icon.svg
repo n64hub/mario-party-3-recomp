@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a24dff"/><stop offset="1" stop-color="#3a148c"/></linearGradient>
+<linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe4f2"/></linearGradient>
+<clipPath id="tile"><rect x="8" y="8" width="240" height="240" rx="44"/></clipPath>
+</defs>
+<g clip-path="url(#tile)">
+<rect width="256" height="256" fill="url(#bg)"/>
+<ellipse cx="24.0" cy="222.0" rx="17" ry="11" fill="#3aa0ff" stroke="#ffffff" stroke-width="3"/>
+<ellipse cx="58.7" cy="202.7" rx="17" ry="11" fill="#ff4040" stroke="#ffffff" stroke-width="3"/>
+<ellipse cx="93.3" cy="196.1" rx="17" ry="11" fill="#3aa0ff" stroke="#ffffff" stroke-width="3"/>
+<ellipse cx="128.0" cy="206.7" rx="17" ry="11" fill="#2fc04a" stroke="#ffffff" stroke-width="3"/>
+<ellipse cx="162.7" cy="227.4" rx="17" ry="11" fill="#3aa0ff" stroke="#ffffff" stroke-width="3"/>
+<ellipse cx="197.3" cy="244.5" rx="17" ry="11" fill="#ff4040" stroke="#ffffff" stroke-width="3"/>
+<ellipse cx="232.0" cy="246.7" rx="17" ry="11" fill="#ffd21e" stroke="#ffffff" stroke-width="3"/>
+<g transform="rotate(-12 128 104)">
+<rect x="78.0" y="58.0" width="120" height="120" rx="24" fill="#000" opacity="0.28"/>
+<rect x="68.0" y="54.0" width="120" height="120" rx="24" fill="#aab3cc"/>
+<rect x="68.0" y="44.0" width="120" height="120" rx="24" fill="url(#face)" stroke="#ffffff" stroke-width="3"/>
+<circle cx="98.0" cy="74.0" r="13" fill="#11843a"/><circle cx="128.0" cy="104.0" r="13" fill="#11843a"/><circle cx="158.0" cy="134.0" r="13" fill="#11843a"/>
+</g>
+</g>
+<rect x="8" y="8" width="240" height="240" rx="44" fill="none" stroke="#0b1640" stroke-width="4"/>
+</svg>
