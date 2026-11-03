@@ -153,6 +153,13 @@ func = "func_800641C8_main"
 before_vram = 0x8006508C
 text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 
+# The camera's list func_8001B0B4_main writes for the models on a board, ended by its scissor's patch
+# (patches/widescreen.c): its first call of func_800127C4_main, marked for the patch (src/game/camera_list.cpp).
+[[patches.hook]]
+func = "func_8001B0B4_main"
+before_vram = 0x8001B314
+text = "{ void mp_camera_list_ends(uint8_t*); mp_camera_list_ends(rdram); }"
+
 # A 4:3 picture's sides black (lib/mario-party-engine/src/wipe.cpp, mp_wipe_picture_sides): func_8001B0B4_main ends
 # the frame's last display list after its wipe and its text, the list's next command in v0, with its gDPFullSync.
 [[patches.hook]]
