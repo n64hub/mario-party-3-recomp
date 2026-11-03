@@ -10,6 +10,12 @@
 #include "../lib/mario-party-engine/patches/board_back.h"
 
 extern s16 D_800D418E_main;
+extern Gfx D_800A09C8_main[];
+extern Gfx* gMainGfxPos;
+extern u8 D_800CC0A8_main;
+extern s32 D_800A0AE8_main[][2];
+
+s32 recomp_camera_list_ends(void);
 
 RECOMP_PATCH void func_80012640_main(s16 camIndex, Gfx** dispList) {
     HuCamera* camera = &gCameraList[camIndex];
@@ -34,6 +40,28 @@ RECOMP_PATCH void func_800127C4_main(s16 camIndex, Gfx** dispList) {
 
     // @recomp The whole screen, or the border (in the board's sideways wipe between turns too), to the window's edges.
     camera_view_scissor(dispList, camera->screenLeft, camera->screenTop, camera->screenRight, camera->screenBottom);
+    // @recomp The camera's list func_8001B0B4_main writes for the models on a board, which each model calls before it
+    // is drawn, ends with a call of D_800A09C8_main after this scissor, a list that sets the clip ratio
+    // (gSPClipRatio(FRUSTRATIO_2)) among the RSP's and RDP's modes, and RT64 counts a clip ratio set as a new viewport:
+    // under a sideways wipe the characters and the things on the board were squeezed into 4:3. The list called here,
+    // the wipe's triangle of no area after it, and the list's end (camera_view_span_after).
+    if (recomp_camera_list_ends()) {
+        camera_view_span_after(dispList, D_800A09C8_main);
+    }
+}
+
+// The clip ratio the models on a board are drawn under, which func_800250D4_main sets in the main list before it draws
+// them, D_800CC0A8_main picking it from D_800A0AE8_main (gSPClipRatio).
+RECOMP_PATCH void func_8002AF40_main(void) {
+    s32* ratio = D_800A0AE8_main[D_800CC0A8_main];
+
+    gMoveWd(gMainGfxPos++, G_MW_CLIP, G_MWO_CLIP_RNX, ratio[0]);
+    gMoveWd(gMainGfxPos++, G_MW_CLIP, G_MWO_CLIP_RNY, ratio[0]);
+    gMoveWd(gMainGfxPos++, G_MW_CLIP, G_MWO_CLIP_RPX, ratio[1]);
+    gMoveWd(gMainGfxPos++, G_MW_CLIP, G_MWO_CLIP_RPY, ratio[1]);
+    // @recomp RT64 counts a clip ratio set as a new viewport, so the characters drawn after it took 4:3 under a sideways
+    // wipe: the wipe's triangle of no area again (camera_view_span).
+    camera_view_span(&gMainGfxPos);
 }
 
 // The scenes the game draws at 4:3 whatever the window's width, by their overlay (OvlLoad, overlays.c, calls

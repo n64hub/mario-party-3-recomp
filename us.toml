@@ -153,6 +153,13 @@ func = "func_800641C8_main"
 before_vram = 0x8006508C
 text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 
+# The camera's list func_8001B0B4_main writes for the models on a board, ended by its scissor's patch
+# (patches/widescreen.c): its first call of func_800127C4_main, marked for the patch (src/game/camera_list.cpp).
+[[patches.hook]]
+func = "func_8001B0B4_main"
+before_vram = 0x8001B314
+text = "{ void mp_camera_list_ends(uint8_t*); mp_camera_list_ends(rdram); }"
+
 # A 3D model's parts paired with their own between the game's frames (lib/mario-party-engine/src/model_ids.cpp says
 # how). func_8001B0B4_main walks the models for each camera (a u8 at 0x800CD6A6), s3 the slot of the one whose parts
 # func_80023404_main(data, ...) queues (from 0x8001BA74, its data in s2). func_80024DF0_main queues a part of the model

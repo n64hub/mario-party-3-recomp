@@ -225,6 +225,7 @@ target_sources(MarioParty3Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/model_ids.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
     ${CMAKE_SOURCE_DIR}/src/game/survey.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/camera_list.cpp
 )
 if (MP_PATCHES)
     target_sources(MarioParty3Recompiled PRIVATE ${CMAKE_SOURCE_DIR}/src/main/register_patches.cpp)
