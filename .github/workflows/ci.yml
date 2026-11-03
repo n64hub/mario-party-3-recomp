@@ -7,15 +7,26 @@
 # configure patches them with N64Recomp-browser's patches/). On an exact hit ninja finds the libraries up to date (the cache
 # keeps mtimes); otherwise the newest cache is restored, the submodules are updated in place and ninja rebuilds what
 # changed.
+#
+# mario-party-engine's CI calls this too (workflow_call, engine-ref): it builds this repo's main with lib/mario-party-engine
+# at the engine's commit. That run is the engine's, in its cache beside the other two games', so its cache keys name the
+# game and the engine commit.
 name: CI
 
 on:
   pull_request:
   push:
     branches: [main]
+  workflow_call:
+    inputs:
+      engine-ref:
+        description: The mario-party-engine commit to build lib/mario-party-engine at
+        type: string
+        required: true
 
+# Called from the engine, a group of the game's own, or the three games would cancel each other.
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ inputs.engine-ref && 'mp3-' || '' }}${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -27,6 +38,7 @@ jobs:
     timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
+      ENGINE_REF: ${{ inputs.engine-ref }}
     steps:
       # Not actions/checkout: its cleanup walks every submodule the cache restored, ~15 s on Windows. Retried, as
       # actions/checkout retries its fetch.
@@ -34,21 +46,29 @@ jobs:
         shell: bash
         env:
           TOKEN: ${{ github.token }}
+          # Called from the engine, $GITHUB_REPOSITORY and $GITHUB_SHA are the engine's.
+          REPO: ${{ inputs.engine-ref && 'n64hub/mario-party-3-recomp' || github.repository }}
+          REF: ${{ inputs.engine-ref && 'main' || github.sha }}
         run: |
           git init -q
           for i in 1 2 3; do
-            git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)" fetch -q --depth 1 --no-tags "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" "$GITHUB_SHA" &&
+            git -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)" fetch -q --depth 1 --no-tags "$GITHUB_SERVER_URL/$REPO" "$REF" &&
               git checkout -q FETCH_HEAD && exit 0
             echo "attempt $i failed"; sleep $((i * 5))
           done
           exit 1
+      # Called from the engine: its commit in place of the one this repo pins, for the cache key and the submodule update.
+      - name: The engine at the commit under test
+        if: inputs.engine-ref
+        shell: bash
+        run: git update-index --cacheinfo "160000,$ENGINE_REF,lib/mario-party-engine"
       - name: Cache key
         id: key
         shell: bash
         run: |
-          prefix="build-v1-$ImageOS-"
+          prefix="build-v1-${ENGINE_REF:+mp3-}$ImageOS-"
           echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
-          echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)" >> "$GITHUB_OUTPUT"
+          echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)${ENGINE_REF:+-$ENGINE_REF}" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         id: cache
         with:
@@ -132,21 +152,28 @@ jobs:
     timeout-minutes: 90
     env:
       SCCACHE_GHA_ENABLED: "true"
+      ENGINE_REF: ${{ inputs.engine-ref }}
     steps:
       - uses: actions/checkout@v4
         with:
+          repository: ${{ inputs.engine-ref && 'n64hub/mario-party-3-recomp' || github.repository }}
+          ref: ${{ inputs.engine-ref && 'main' || '' }}
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: No ROM data tracked, TOML parses, Python compiles
         run: python -I tools/ci/check_repo.py
+      # Called from the engine: its commit in place of the one this repo pins, for the cache key and the submodule update.
+      - name: The engine at the commit under test
+        if: inputs.engine-ref
+        run: git update-index --cacheinfo "160000,$ENGINE_REF,lib/mario-party-engine"
       - name: Cache key
         id: key
         run: |
-          prefix="build-v1-$ImageOS-"
+          prefix="build-v1-${ENGINE_REF:+mp3-}$ImageOS-"
           echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
-          echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)" >> "$GITHUB_OUTPUT"
+          echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)${ENGINE_REF:+-$ENGINE_REF}" >> "$GITHUB_OUTPUT"
           echo "apt=apt-$ImageOS-$ImageVersion" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         id: cache
