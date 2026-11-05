@@ -50,6 +50,23 @@ if (EMSCRIPTEN)
     if (EXISTS ${CMAKE_SOURCE_DIR}/src/rt64_shaders.txt)
         set(RT64_PREBUILT_SHADER_LIST ${CMAKE_SOURCE_DIR}/src/rt64_shaders.txt)
     endif()
+else()
+    # The desktop build's compiles go through ccache when it is on PATH, so a new build dir or another checkout of the
+    # same code compiles only what changed since a build here. CCACHE_BASEDIR, the checkout, makes its paths relative
+    # and CCACHE_NOHASHDIR leaves the build dir out of what a compile is hashed by: without both, clang-cl's compiles
+    # in one checkout hit nothing of another's. Debug info goes in each object (/Z7), since /Zi's shared PDB can't be
+    # cached, so a hit's names the checkout that compiled it first. Precompiled headers (RmlUi's) are off: ccache can't
+    # cache a file that includes one.
+    find_program(CCACHE_PROGRAM ccache)
+    if (CCACHE_PROGRAM AND NOT CMAKE_C_COMPILER_LAUNCHER)
+        set(CMAKE_C_COMPILER_LAUNCHER ${CMAKE_COMMAND} -E env CCACHE_BASEDIR=${CMAKE_SOURCE_DIR} CCACHE_NOHASHDIR=1
+            ${CCACHE_PROGRAM})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${CMAKE_C_COMPILER_LAUNCHER})
+        set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
+        foreach (flags C_FLAGS_DEBUG CXX_FLAGS_DEBUG C_FLAGS_RELWITHDEBINFO CXX_FLAGS_RELWITHDEBINFO)
+            string(REPLACE "/Zi" "/Z7" CMAKE_${flags} "${CMAKE_${flags}}")
+        endforeach()
+    endif()
 endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
