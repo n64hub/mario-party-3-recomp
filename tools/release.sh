@@ -14,17 +14,18 @@
 # PR adds what the player gets to releases/next.md, and a release is a PR titled "Release v<version>" that bumps
 # version_string in src/main/main.cpp and moves releases/next.md to releases/v<version>.md: what a player gets, not a
 # list of merged PRs. The tag is v<version_string>. Both builds and the publish run on that PR's merge commit,
-# checked out with a clean tree: each archive records the commit it was built from (out/<archive>.commit), and
-# publish refuses archives from another one or that haven't booted (boot), a tree with changes, a commit not on
-# origin/main or still holding releases/next.md, or a tag that exists. A change merged meanwhile goes in the next
-# release and doesn't stop this one.
+# checked out with a clean tree: each build moves the submodules onto their pins, refuses a tree with changes and
+# records the commit it was built from (out/<archive>.commit), and publish refuses archives from another one or that
+# haven't booted (boot), a tree with changes, a commit not on origin/main or still holding releases/next.md, or a tag
+# that exists. A change merged meanwhile goes in the next release and doesn't stop this one.
 #
 # Windows: Release (CMakeLists.txt makes that a windowed program, with no console), the DLLs beside the exe as the
 # build leaves them (SDL2, dxcompiler, dxil). It needs the Visual C++ 2015-2022 redistributable (x64). clang-cl, CMake
 # and Ninja are on PATH, and MIPS_CC and MIPS_LD name the MIPS clang and ld.lld that build patches/.
 # Windows builds through ccache when it is on PATH (CMakeLists.txt says how): its cache is the user's, outside the
 # tree, so a release built in a fresh clone compiles only what changed since the last one built here (the shaders dxc
-# builds always build).
+# builds always build). A clone kept from one release to the next keeps build/release-windows as well, so there only
+# what changed builds, the shaders included (tools/recompile.sh keeps the times of the files that come out the same).
 # boot runs lib/N64Recomp-browser's tools/boot_release.sh, which says how, on the archive: unpacked into a new folder
 # with the ROM stored as Load ROM stores it, run with --boot (and any arguments after the OS) for 30 s, its own window
 # captured. It writes the <archive>.booted publish asks for.
@@ -45,9 +46,15 @@ name="MarioParty3Recompiled-$tag"
 commit=$(git rev-parse HEAD)
 mkdir -p out
 
+clean() {
+    [ -z "$(git status --porcelain --ignore-submodules=dirty)" ] || { echo "the tree has uncommitted changes" >&2; exit 1; }
+}
+
 setup() {
     [ -f roms/marioparty3.us.z64 ] || { echo "no roms/marioparty3.us.z64 (README, Building)" >&2; exit 1; }
+    git submodule sync -q --recursive
     git submodule update --init --recursive
+    clean
 }
 
 case "${1:-}" in
@@ -116,7 +123,7 @@ publish)
     esac
     notes="releases/$tag.md"
     [ -s "$notes" ] || { echo "no $notes: write the release notes for players first" >&2; exit 1; }
-    [ -z "$(git status --porcelain --ignore-submodules=dirty)" ] || { echo "the tree has uncommitted changes" >&2; exit 1; }
+    clean
     git fetch -q origin main
     git merge-base --is-ancestor "$commit" origin/main || { echo "HEAD is not on origin/main" >&2; exit 1; }
     [ ! -e releases/next.md ] || { echo "releases/next.md is still there: move it to $notes in the release's PR" >&2; exit 1; }
