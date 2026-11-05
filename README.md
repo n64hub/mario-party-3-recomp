@@ -58,10 +58,10 @@ ninja -C build MarioParty3Recompiled
 The symbols in `syms/` are made from the decomp's own build of the game (`tools/build_decomp.sh`, which needs the ROM
 and Docker, then `tools/gen_syms.sh`). They only change when `lib/marioparty3` moves.
 
-A release is built by `tools/release.sh`: `windows` (Git Bash) and `linux` (Linux with Docker) build and pack its
-two archives into `out/` from the same commit of `main`, and `publish` publishes them as the GitHub release
-`v<version_string>` (`src/main/main.cpp`) with `releases/v<version>.md` as its notes, `--prerelease` marking it a
-prerelease (the script's header says more).
+A release is built by `tools/release.sh`: `windows` (Git Bash) and `linux` (Linux with Docker) build and pack its two
+archives into `out/` from the same commit of `main`, `boot windows` and `boot linux` boot each from a new folder, as a
+player first runs it, and `publish` publishes them as the GitHub release `v<version_string>` (`src/main/main.cpp`)
+with `releases/v<version>.md` as its notes, `--prerelease` marking it a prerelease (the script's header says more).
 
 ## Controls
 
