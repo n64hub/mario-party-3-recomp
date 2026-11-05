@@ -8,10 +8,13 @@
 #     tools/release.sh publish [--prerelease]   # both archives, built from this commit: the GitHub release (gh
 #                                               # signed in), marked a prerelease with --prerelease
 #
-# The tag is v<version_string> from src/main/main.cpp, so bump that first, and write the release's notes beside it in
-# releases/v<version>.md: what a player gets, not a list of merged PRs. Both builds and the publish run on the same
-# commit, origin/main's, with a clean tree: each archive records the commit it was built from (out/<archive>.commit),
-# and publish refuses archives from another one, a tree with changes, or a tag that exists.
+# One release carries every change merged since the last (N64Recomp-browser's CLAUDE.md, Releasing): each change's
+# PR adds what the player gets to releases/next.md, and a release is a PR titled "Release v<version>" that bumps
+# version_string in src/main/main.cpp and moves releases/next.md to releases/v<version>.md: what a player gets, not a
+# list of merged PRs. The tag is v<version_string>. Both builds and the publish run on that PR's merge commit,
+# checked out with a clean tree: each archive records the commit it was built from (out/<archive>.commit), and
+# publish refuses archives from another one, a tree with changes, a commit not on origin/main or still holding
+# releases/next.md, or a tag that exists. A change merged meanwhile goes in the next release and doesn't stop this one.
 #
 # Windows: Release (CMakeLists.txt makes that a windowed program, with no console), the DLLs beside the exe as the
 # build leaves them (SDL2, dxcompiler, dxil). It needs the Visual C++ 2015-2022 redistributable (x64). clang-cl, CMake
@@ -95,7 +98,8 @@ publish)
     [ -s "$notes" ] || { echo "no $notes: write the release notes for players first" >&2; exit 1; }
     [ -z "$(git status --porcelain --ignore-submodules=dirty)" ] || { echo "the tree has uncommitted changes" >&2; exit 1; }
     git fetch -q origin main
-    [ "$commit" = "$(git rev-parse origin/main)" ] || { echo "HEAD is not origin/main" >&2; exit 1; }
+    git merge-base --is-ancestor "$commit" origin/main || { echo "HEAD is not on origin/main" >&2; exit 1; }
+    [ ! -e releases/next.md ] || { echo "releases/next.md is still there: move it to $notes in the release's PR" >&2; exit 1; }
     ! gh release view "$tag" > /dev/null 2>&1 || { echo "release $tag exists: bump version_string first" >&2; exit 1; }
     files=("out/$name-windows-x64.zip" "out/$name-linux-x64.tar.gz")
     for f in "${files[@]}"; do
