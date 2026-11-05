@@ -39,6 +39,12 @@ set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
 
+# Windows' paths stop at 260 characters, and the submodules' deepest files (rt64's spirv-cross tests) are 184 long
+# inside the clone, so a clone in a deep folder can't check them out. core.longpaths set in the clone doesn't reach
+# the submodules' own clones; set in the environment, it reaches every git command below, theirs included. Elsewhere
+# than Windows it changes nothing.
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.longpaths GIT_CONFIG_VALUE_0=true
+
 version=$(sed -n 's/^const std::string version_string = "\(.*\)";$/\1/p' src/main/main.cpp)
 [ -n "$version" ] || { echo "no version_string in src/main/main.cpp" >&2; exit 1; }
 tag="v$version"
