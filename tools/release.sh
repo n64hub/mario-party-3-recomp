@@ -25,9 +25,10 @@
 # Windows builds through ccache when it is on PATH: its cache is the user's, outside the tree, so a release built in a
 # fresh clone compiles only what changed since the last one built here (the shaders dxc builds always build).
 # CCACHE_BASEDIR makes the tree's paths relative and CCACHE_NOHASHDIR leaves the working directory out (the release has
-# no debug info that holds it), so another clone's compiles match.
+# no debug info that holds it), so another clone's compiles match. Precompiled headers are
+# off with it (RmlUi's): ccache can't cache a file that includes one.
 # boot runs lib/N64Recomp-browser's tools/boot_release.sh, which says how, on the archive: unpacked into a new folder
-# with the ROM stored as Load ROM stores it, run with --boot (and any arguments after the OS) for 40 s, its own window
+# with the ROM stored as Load ROM stores it, run with --boot (and any arguments after the OS) for 30 s, its own window
 # captured. It writes the <archive>.booted publish asks for.
 # Linux: in the image tools/docker/Dockerfile.linux, Ubuntu 22.04, so the binary needs glibc 2.35 or newer. It carries
 # the libSDL2 it was built with and libatomic (not on every system) beside the binary (RUNPATH $ORIGIN), as the Windows
@@ -57,11 +58,11 @@ windows)
     setup
     bash tools/recompile.sh -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
     build=build/release-windows
-    cc=
-    command -v ccache > /dev/null && cc=ccache
+    cc= nopch=OFF
+    command -v ccache > /dev/null && cc=ccache nopch=ON
     export CCACHE_BASEDIR="$(cygpath -w "$ROOT")" CCACHE_NOHASHDIR=1
     cmake -S . -B "$build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl \
-        -DCMAKE_C_COMPILER_LAUNCHER="$cc" -DCMAKE_CXX_COMPILER_LAUNCHER="$cc" \
+        -DCMAKE_C_COMPILER_LAUNCHER="$cc" -DCMAKE_CXX_COMPILER_LAUNCHER="$cc" -DCMAKE_DISABLE_PRECOMPILE_HEADERS=$nopch \
         -DPATCHES_C_COMPILER="$MIPS_CC" -DPATCHES_LD="$MIPS_LD" > "$build.log" 2>&1 || { tail -20 "$build.log"; exit 1; }
     ninja -C "$build" MarioParty3Recompiled > "$build/build.log" 2>&1 ||
         { grep -E " error|FAILED|undefined" "$build/build.log" | head -20; exit 1; }
