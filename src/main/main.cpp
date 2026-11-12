@@ -529,14 +529,13 @@ int main(int argc, char** argv) {
     // as any of them ends, so the screen flickers between parts of a frame.
     ultramodern::renderer::callbacks_t renderer_callbacks{
         .create_render_context = [](uint8_t* rdram, ultramodern::renderer::WindowHandle window_handle, bool developer_mode) {
-            // On the page render to RAM is off: the game's CPU never reads a frame it drew (a board turn, a minigame's
-            // instructions, the minigame and back to the board draw as they do with it), and each copy into RDRAM waits for
-            // the browser's readback, at the end of every one of the RSP tasks a frame is drawn in. Uncapped in Chrome,
-            // Ice Rink Risk made the game's own 30 frames a second either way, and 335-336 presents a second with the copy and
-            // 341-344 without it. The desktop build keeps RT64's default.
-#ifdef __EMSCRIPTEN__
+            // Render to RAM is off: the game's CPU never reads a frame it drew (a board turn, a minigame's instructions,
+            // the minigame and back to the board draw as they do with it), so the copy into RDRAM at the end of every one
+            // of the RSP tasks a frame is drawn in is only a cost. On the page each copy waits for the browser's readback:
+            // uncapped in Chrome, Ice Rink Risk made the game's own 30 frames a second either way, and 335-336 presents a
+            // second with the copy and 341-344 without it. On the desktop it is a second draw of every frame (Rush 2049's
+            // and Super Mario 64's Copy Frames to RAM, Off by default).
             recompui::renderer::set_render_to_ram(false);
-#endif
             return recompui::renderer::create_render_context(rdram, window_handle, ultramodern::renderer::PresentationMode::SkipBuffering, developer_mode);
         },
     };
