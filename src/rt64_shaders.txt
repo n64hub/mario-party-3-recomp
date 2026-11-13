@@ -13,9 +13,10 @@
 # tools/survey.js) takes the setup's way to the first board to the first minigame instead, and each minigame's end to
 # the next, with the teams its kind has (1 vs 3, 2 vs 2, 4 players, one player) and four computer players, who play
 # each to its end but the last, Dizzy Dinghies, which they don't finish in the three minutes it is played. Not
-# recorded: the Duel Map and its boards, Story mode, the Mini-Game House, the options and the records. One shader is
-# added by hand to section 0: a board's start missed it in plays from a 3840x2000 canvas. Flags follow settings
-# (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means recording again.
+# recorded: the Duel Map and its boards, Story mode, the Mini-Game House, the options and the records. Eleven shaders
+# are added by hand to section 0: one a board's start missed in plays from a 3840x2000 canvas, and ten
+# tools/play_plan.json missed on a fresh profile. Flags follow settings (filtering, HDR, MSAA, upscaling), so a change
+# to one of those defaults means recording again.
 0c087009 00008cff fcffffff fffcf279 04cb540b
 005041c9 00000cff fcffffff fffdf6fb 0800000b
 005041c8 00000cff fcffffff fffdf6fb 0800000b
@@ -69,6 +70,16 @@
 00504a51 00082c3f fcff97ff ff2dfeff 0ccb540c
 005041c9 00000c3f fcffffff fffdf6fb 0800000b
 005041c9 00000c3f fcffb3ff ff65feff 008a000b
+00552248 00003cff fcffffff fffcf279 0ccb5408
+00552248 00003cff fcffffff fffcf279 0ccb540a
+00504240 00003cff fcffffff fffcfa7d 0ccb5408
+00504240 00083cff fcffffff fffcf279 0ccb5408
+00504241 00003cff fcffffff fffcf279 0b333208
+0f0a4000 00003cff fcffffff fffdf6fb 08000008
+00000000 00002cff fcffffff fffe793c 08000008
+0f0a4000 00002cff fcffffff fffe793c 08000008
+0f0a4000 00002cff fcffffff fffe793c 0800000a
+00000000 00080cff fc119623 ff2fffff 0ccb5402
 section chilly
 00504f50 00082c3f fc30fe61 44fe7339 088a000c
 00552078 00082c3f fc327e64 fffffdfe 0800000c
