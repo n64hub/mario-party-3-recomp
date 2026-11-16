@@ -282,3 +282,13 @@ text = "{ int mp_map_scrolling_fast(void); if (mp_map_scrolling_fast()) ctx->f12
 func = "func_801008E8_name_81"
 before_vram = 0x801009C8
 text = "{ int mp_map_scrolling_fast(void); if (mp_map_scrolling_fast()) ctx->f12.fl *= 2.0f; }"
+
+# Ridiculous Relay's water (func_80108DE8_ridiculous_relay) is a see-through picture drawn in strips 40 pixels apart,
+# each from a whole pixel to 40.75 pixels on, so each strip reaches 0.75 of a pixel into the next. The console draws
+# the pixel the two share once, and the water is smooth; RT64 draws a rectangle's edges where they are, so at a higher
+# resolution that 0.75 of a pixel is drawn by both strips and the water shows a darker stripe every 40 pixels. The
+# strip's right edge (t1, in quarter pixels) ends on its whole pixel instead, where the next strip starts.
+[[patches.hook]]
+func = "func_80108DE8_ridiculous_relay"
+before_vram = 0x801093F8
+text = "ctx->r9 &= ~(gpr)3;"
