@@ -74,7 +74,7 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   game draws a frame in several RSP tasks, which RT64 interpolates as one game frame with RT64_GAME_FRAME_WORKLOADS, on
   with Emscripten and in `CMakeLists.txt` on the desktop too. It draws a picture wider than 4:3 with Aspect Ratio
   Expand: `patches/widescreen.c` takes a camera's view to the window's edges and `patches/background.c` a board's
-  background, through lib/mario-party-engine's `camera_view.c` and `board_back.c` (their headers say how), and
+  background (`patches/duel_background.c` a duel board's, which streams its tiles with code of its own), through lib/mario-party-engine's `camera_view.c` and `board_back.c` (their headers say how), and
   `us.toml`'s hooks in the sprite manager the board's HUD, the players' panels (with the items an item select shows
   big, which it draws as triangles, the hand that carries one out and an item flown to another panel), to its left and
   right edges, and a
@@ -82,7 +82,7 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   draws at 4:3), through lib/mario-party-engine's `src/hud.cpp`, and its hooks in the wipe module draw an iris's, the
   star's and a fade's colour to them too, through its `src/wipe.cpp`. `us.toml` also makes pfDrawFonts's scissors the
   whole screen's (its comment says why). The board's camera stops where the wider picture reaches the map's edge
-  (`patches/background.c`, with the engine's `src/aspect_ratio.cpp`). A map no wider than 320 (a board's opening,
+  (`patches/background.c` and `patches/duel_background.c`, with the engine's `src/aspect_ratio.cpp`). A map no wider than 320 (a board's opening,
   opboard's, 5x5 tiles) keeps black at its sides, the game having nothing beside it to draw, and its 3D and the HUD keep
   inside 4:3 with it (`board_back.c`). So does a scene `patches/widescreen.c` lists as drawn at 4:3 (a board's results
   on the star stage, the opening and title and forty minigames), black drawn over the window's sides at each frame's end
