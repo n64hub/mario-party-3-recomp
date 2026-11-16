@@ -74,6 +74,13 @@ func = "MBStatusPosSet"
 before_vram = 0x800F4874
 text = "{ void mp_hud_panel_at(uint8_t*, int32_t, gpr, int32_t, int32_t, gpr); int32_t p = (int32_t)ctx->r4; gpr s = (gpr)(int32_t)0x801057E0 + p * 0x6C; int16_t g = MEM_H(0xA, s); mp_hud_panel_at(rdram, p, (gpr)(int32_t)MEM_W(g * 4, (gpr)(int32_t)0x800CDD70), 0x10, (int16_t)ctx->r5, s + 0x10); }"
 
+# A duel board's two panels the same way: func_800F6550_name_81(player, x, y) is its MBStatusPosSet, with a status of
+# its own for each player (0x6C bytes from 0x80105630), the panel's group at 0x4 and its xPos and yPos at 0xC.
+[[patches.hook]]
+func = "func_800F6550_name_81"
+before_vram = 0x800F6550
+text = "{ void mp_hud_panel_at(uint8_t*, int32_t, gpr, int32_t, int32_t, gpr); int32_t p = (int32_t)ctx->r4; gpr s = (gpr)(int32_t)0x80105630 + p * 0x6C; int16_t g = MEM_H(0x4, s); mp_hud_panel_at(rdram, p, (gpr)(int32_t)MEM_W(g * 4, (gpr)(int32_t)0x800CDD70), 0x10, (int16_t)ctx->r5, s + 0xC); }"
+
 [[patches.hook]]
 func = "HuSprGrpKill"
 before_vram = 0x800525C8
