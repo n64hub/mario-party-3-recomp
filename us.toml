@@ -150,6 +150,19 @@ func = "func_8006231C_main"
 before_vram = 0x800623E8
 text = "{ void mp_wipe_fill_end(uint8_t*, gpr); mp_wipe_fill_end(rdram, ctx->r4); }"
 
+# The opening's own fade (opWipeDraw(gfx), the Millennium Star's flash of white and the opening's fades in and out),
+# a copy of the wipe module's whole-screen rectangle, drawn under the opening's camera's scissor 8 pixels inside the
+# screen: only when its alpha isn't 0, from 0x80114398 with gfx in a1, to its last word at 0x80114458.
+[[patches.hook]]
+func = "opWipeDraw"
+before_vram = 0x80114398
+text = "{ void mp_wipe_fill_start(uint8_t*, gpr); mp_wipe_fill_start(rdram, ctx->r5); }"
+
+[[patches.hook]]
+func = "opWipeDraw"
+before_vram = 0x80114458
+text = "{ void mp_wipe_fill_end(uint8_t*, gpr); mp_wipe_fill_end(rdram, ctx->r5); }"
+
 [[patches.hook]]
 func = "func_800636D8_main"
 before_vram = 0x80063F68
@@ -299,3 +312,22 @@ text = "{ int mp_map_scrolling_fast(void); if (mp_map_scrolling_fast()) ctx->f12
 func = "func_80108DE8_ridiculous_relay"
 before_vram = 0x801093F8
 text = "ctx->r9 &= ~(gpr)3;"
+
+# A model's part that hides what is behind it without showing (Ice Rink Risk's rink, under its picture drawn on the
+# screen behind it): func_8002A358_main gives such a material (flag 0x80000 of 0x800C9940) the render mode 0x005553F0,
+# which keeps the screen's colour but writes the depth. Its coverage is multiplied by its alpha (CVG_X_ALPHA), and its
+# alpha is 0. Without antialiasing the console writes a pixel the triangle covers whatever that product is, so the
+# depth is written and a character who falls off goes behind the rink; RT64 drops a pixel whose coverage is 0, so
+# nothing hides them. The mode without CVG_X_ALPHA (0x005543F0) draws the same on the console, and RT64 writes its
+# depth: at the join after the modes are picked (0x8002AB4C, the mode in a3).
+[[patches.hook]]
+func = "func_8002A358_main"
+before_vram = 0x8002AB4C
+text = "if ((uint32_t)ctx->r7 == 0x005553F0u) { ctx->r7 = 0x005543F0; }"
+
+# The rules screen's book (src/game/rules_book.cpp says why): func_8001B0B4_main walks each model's parts for the
+# frame, and at 0x8001BA74 hands the model's data (s2) to func_80023404_main; after it, the model's vertex buffers.
+[[patches.hook]]
+func = "func_8001B0B4_main"
+before_vram = 0x8001BA80
+text = "{ void mp_model_walked(uint8_t*, gpr); mp_model_walked(rdram, ctx->r18); }"
