@@ -39,6 +39,11 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       ENGINE_REF: ${{ inputs.engine-ref }}
+      # The image's MSVC (14.52 from its 2026-11-16 update) refuses a clang older than 22 (STL1000), and its clang-cl
+      # is 20: clang-cl puts CL in front of every command line (_CL_ goes after it, where CMake's "-- <source>" makes it
+      # a file), so this lets the STL take it, cached builds' compiles included. A dash, not a slash: Git Bash steps
+      # take /D... for a path and rewrite it.
+      CL: -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH
     steps:
       # Not actions/checkout: its cleanup walks every submodule the cache restored, ~15 s on Windows. Retried, as
       # actions/checkout retries its fetch.
