@@ -10,14 +10,14 @@
 #     tools/release.sh publish [--prerelease]   # both archives, built from this commit: the GitHub release (gh
 #                                               # signed in), marked a prerelease with --prerelease
 #
-# One release carries every change merged since the last (N64Recomp-browser's CLAUDE.md, Releasing): each change's
-# PR adds what the player gets to releases/next.md, and a release is a PR titled "Release v<version>" that bumps
-# version_string in src/main/main.cpp and moves releases/next.md to releases/v<version>.md: what a player gets, not a
-# list of merged PRs. The tag is v<version_string>. Both builds and the publish run on that PR's merge commit,
-# checked out with a clean tree: each build moves the submodules onto their pins (unpatch, below), refuses a tree with
-# changes and records the commit it was built from (out/<archive>.commit), and publish refuses archives from another
-# one or that haven't booted (boot), a tree with changes, a commit not on origin/main or still holding
-# releases/next.md, or a tag that exists. A change merged meanwhile goes in the next release and doesn't stop this one.
+# One release carries every change merged since the last: each change's PR adds what the player gets to
+# releases/next.md, and a release is a PR titled "Release v<version>" that bumps version_string in src/main/main.cpp and
+# moves releases/next.md to releases/v<version>.md: what a player gets, not a list of merged PRs. The tag is
+# v<version_string>. Both builds and the publish run on that PR's merge commit, checked out with a clean tree: each
+# build moves the submodules onto their pins (unpatch, below), refuses a tree with changes and records the commit it was
+# built from (out/<archive>.commit), and publish refuses archives from another one or that haven't booted (boot), a tree
+# with changes, a commit not on origin/main or still holding releases/next.md, or a tag that exists. A change merged
+# meanwhile goes in the next release and doesn't stop this one.
 #
 # Windows: Release (CMakeLists.txt makes that a windowed program, with no console), the DLLs beside the exe as the
 # build leaves them (SDL2, dxcompiler, dxil). It needs the Visual C++ 2015-2022 redistributable (x64). clang-cl, CMake
@@ -26,9 +26,9 @@
 # tree, so a release built in a fresh clone compiles only what changed since the last one built here (the shaders dxc
 # builds always build). A clone kept from one release to the next keeps build/release-windows as well, so there only
 # what changed builds, the shaders included (tools/recompile.sh keeps the times of the files that come out the same).
-# boot runs lib/N64Recomp-browser's tools/boot_release.sh, which says how, on the archive: unpacked into a new folder
-# with the ROM stored as Load ROM stores it, run with --boot (and any arguments after the OS) for 30 s, its own window
-# captured. It writes the <archive>.booted publish asks for.
+# boot runs $BOOT_RELEASE on the archive, which unpacks it into a new folder with the ROM stored as Load ROM stores it,
+# runs it with --boot (and any arguments after the OS) for 30 s with its own window captured, and writes the
+# <archive>.booted publish asks for.
 # Linux: in the image tools/docker/Dockerfile.linux, Ubuntu 22.04, so the binary needs glibc 2.35 or newer. It carries
 # the libSDL2 it was built with and libatomic (not on every system) beside the binary (RUNPATH $ORIGIN), as the Windows
 # zip carries SDL2.dll, and is a .tar.gz so the binary stays executable. GTK 3, FreeType and a Vulkan driver are the
@@ -131,9 +131,11 @@ boot)
     linux) archive="out/$name-linux-x64.tar.gz" ;;
     *) echo "usage: tools/release.sh boot windows|linux [program args...]" >&2; exit 1 ;;
     esac
-    boot=${BOOT_RELEASE:-lib/N64Recomp-browser/tools/boot_release.sh}
-    [ -f "$boot" ] ||
-        { echo "no $boot: set BOOT_RELEASE to tools/boot_release.sh in a checkout of N64Recomp-browser's main" >&2; exit 1; }
+    boot=${BOOT_RELEASE:-}
+    [ -n "$boot" ] && [ -f "$boot" ] || {
+        echo "set BOOT_RELEASE to the script that boots a release archive: <archive> <rom> <game id> <dir> [args...]" >&2
+        exit 1
+    }
     bash "$boot" "$archive" roms/marioparty3.us.z64 marioparty3.n64.us.1.0 "out/boot-$2" "${@:3}"
     ;;
 publish)
