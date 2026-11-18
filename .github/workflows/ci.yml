@@ -66,7 +66,7 @@ jobs:
         id: key
         shell: bash
         run: |
-          prefix="build-v1-${ENGINE_REF:+mp3-}$ImageOS-"
+          prefix="build-v2-${ENGINE_REF:+mp3-}$ImageOS-"
           echo "prefix=$prefix" >> "$GITHUB_OUTPUT"
           echo "key=$prefix$ImageVersion-$(git ls-tree HEAD lib | git hash-object --stdin)${ENGINE_REF:+-$ENGINE_REF}" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
@@ -103,6 +103,16 @@ jobs:
           ninjaVersion: "^1.13.0"
       - uses: mozilla-actions/sccache-action@v0.0.9
         id: sccache
+      # LLVM's own clang 22, the clang the Windows releases build with: the image's MSVC 14.52 (its 2026-11-16 update)
+      # takes no clang older than 22 (STL1000), and the image's own clang-cl is 20. Only bin and the compiler's own
+      # headers are unpacked, ~20 s.
+      - name: LLVM 22
+        run: |
+          curl.exe -fsSL --retry 3 -o "$env:RUNNER_TEMP\llvm.exe" `
+            https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-win64.exe
+          7z x -y -oC:\llvm22 "$env:RUNNER_TEMP\llvm.exe" bin lib\clang | Out-Null
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          "C:\llvm22\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
       - name: Stand in for the ROM-generated sources
         shell: bash
         run: |
