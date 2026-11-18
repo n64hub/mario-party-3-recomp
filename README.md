@@ -66,6 +66,12 @@ archives into `out/` from the same commit of `main`, `boot windows` and `boot li
 player first runs it, and `publish` publishes them as the GitHub release `v<version_string>` (`src/main/main.cpp`)
 with `releases/v<version>.md` as its notes, `--prerelease` marking it a prerelease (the script's header says more).
 
+The save is checked by machine on the Linux build, with N64Recomp-browser's `tools/remote_frame_dump.sh <build>
+MarioParty3Recompiled marioparty3.n64.us.1.0 <rom> tools/save_plan.txt <out> --saves tools/load_plan.txt`:
+`tools/save_plan.txt` makes File 2 and chooses it, which the game saves as the last file used, then the program is
+restarted in the same folder with `saves/` and its file behind symlinks, and `tools/load_plan.txt` finds File 2 read
+back as the last file at boot, the file untouched until file select, and File 1 made and saved through the links.
+
 ## Controls
 
 A gamepad, or the keyboard.
