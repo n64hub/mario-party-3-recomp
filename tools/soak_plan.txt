@@ -1,0 +1,40 @@
+# Mario Party 3's soak plan: one round, 300 s with the boot, of N64Recomp-browser's
+# tools/frame_dump.mjs --soak 300 on the Linux build, through tools/remote_frame_dump.sh as a `soak` job:
+#   tools/remote_frame_dump.sh <game dir> MarioParty3Recompiled marioparty3.n64.us.1.0 <rom> tools/soak_plan.txt <out> --soak 300
+# It fails on a Crash: line, the program exiting, or the picture standing still for 10 s. A round plays a new save:
+# Start (Enter) through the logos and the title to the file select, A (Space) on a new file into the mode select
+# (Party Place's hub) and through the Millennium Star's greeting, the stick left (A) onto the Battle Royale star, A
+# through the party's setup (one player and three computer players) and the board's opening onto Chilly Waters, its
+# first turns (A rolls player 1's dice), the minigame's instructions, Start to play it, the minigame on random input (A
+# and the stick), its results, and the board again until the time is up: the board from about 105 s, the minigame from
+# about 200 s to 230 s. Start is pressed 5 s and 8 s after the instructions come up: sooner, it lands while they fade
+# in and is lost, and A doesn't leave them. Duel Map's board, the Mini-Game Room and Story mode aren't in the round.
+# Which screen is up is the overlay omOvlGotoEx last went to, omovl (0x800CE200): the file select 0x79, the mode select
+# 0x77, the setup 0x78, boardcall 0x47 and the board's opening 0x53, the boards 0x48 (Chilly Waters) to 0x4E, a
+# minigame's instructions 0x70, the minigames 0x01 to 0x46, their results 0x71. The mode select's glove is a word of its
+# own at 0x8010F730, 0 until the greeting ends, then the glove's x: 0xAC on the middle star, 0x90 on the Battle Royale
+# star.
+15 until 0x800CE200 0xFFFFFFFF 0x79 100 Enter
+16 shot filesel
+16 until 0x800CE200 0xFFFFFFFF 0x77 60 Space
+16 until 0x8010F730 0xFFFFFFFF 0xAC 40 Space
+16 until 0x8010F730 0xFFFFFFFF 0x90 15 a
+17 shot battle_royale
+17 until 0x800CE200 0xFFFFFFFF 0x78 30 Space
+18 random Space
+19 until 0x800CE200 0xFFFFFFFF 0x48 150 Space
+20 shot board
+20 until 0x800CE200 0xFFFFFFFF 0x70 120 Space
+21 shot instructions
+25 key Enter
+28 key Enter
+29 random Space,w,a,s,d
+31 peek 0x800CE200
+40 shot minigame
+40 peek 0x800CE200
+50 peek 0x800CE200
+60 peek 0x800CE200
+70 shot after_minigame
+70 peek 0x800CE200
+80 peek 0x800CE200
+90 peek 0x800CE200
