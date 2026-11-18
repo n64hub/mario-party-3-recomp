@@ -33,6 +33,9 @@
 # the libSDL2 it was built with and libatomic (not on every system) beside the binary (RUNPATH $ORIGIN), as the Windows
 # zip carries SDL2.dll, and is a .tar.gz so the binary stays executable. GTK 3, FreeType and a Vulkan driver are the
 # system's.
+# Either build can come from elsewhere: with WINDOWS_BUILD naming a folder that holds a Release build of
+# MarioParty3Recompiled from this commit (a cross-build, say), windows packs that instead of building, and run inside a
+# container of tools/docker/Dockerfile.linux's image (where there is no Docker), linux builds right there.
 # Both hold assets/ (the launcher's), recompcontrollerdb.txt and LICENSE beside the program, which works from its own
 # folder when it is started from another (src/main/main.cpp).
 set -euo pipefail
@@ -80,14 +83,19 @@ setup() {
 
 case "${1:-}" in
 windows)
-    [ -n "${MIPS_CC:-}" ] && [ -n "${MIPS_LD:-}" ] || { echo "set MIPS_CC and MIPS_LD (README, Building)" >&2; exit 1; }
-    setup
-    bash tools/recompile.sh -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
-    build=build/release-windows
-    cmake -S . -B "$build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl \
-        -DPATCHES_C_COMPILER="$MIPS_CC" -DPATCHES_LD="$MIPS_LD" > "$build.log" 2>&1 || { tail -20 "$build.log"; exit 1; }
-    ninja -C "$build" MarioParty3Recompiled > "$build/build.log" 2>&1 ||
-        { grep -E " error|FAILED|undefined" "$build/build.log" | head -20; exit 1; }
+    if [ -n "${WINDOWS_BUILD:-}" ]; then
+        build=$WINDOWS_BUILD
+        [ -f "$build/MarioParty3Recompiled.exe" ] || { echo "no $build/MarioParty3Recompiled.exe" >&2; exit 1; }
+    else
+        [ -n "${MIPS_CC:-}" ] && [ -n "${MIPS_LD:-}" ] || { echo "set MIPS_CC and MIPS_LD (README, Building)" >&2; exit 1; }
+        setup
+        bash tools/recompile.sh -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl
+        build=build/release-windows
+        cmake -S . -B "$build" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl \
+            -DPATCHES_C_COMPILER="$MIPS_CC" -DPATCHES_LD="$MIPS_LD" > "$build.log" 2>&1 || { tail -20 "$build.log"; exit 1; }
+        ninja -C "$build" MarioParty3Recompiled > "$build/build.log" 2>&1 ||
+            { grep -E " error|FAILED|undefined" "$build/build.log" | head -20; exit 1; }
+    fi
     stage="out/$name-windows-x64"
     rm -rf "$stage" "$stage.zip"
     mkdir -p "$stage"
@@ -99,12 +107,8 @@ windows)
     echo "$stage.zip ($(du -h "$stage.zip" | cut -f1))"
     ;;
 linux)
-    setup
-    image=marioparty3-linux:$(sha256sum tools/docker/Dockerfile.linux | cut -c1-12)
-    mkdir -p build/home build/ccache
-    docker image inspect "$image" > /dev/null 2>&1 || docker build -t "$image" -f tools/docker/Dockerfile.linux tools/docker
-    docker run --rm -u "$(id -u):$(id -g)" -v "$ROOT:/src" -w /src -e CCACHE_DIR=/src/build/ccache -e HOME=/src/build/home \
-        "$image" bash -euo pipefail -c "
+    # The build, in tools/docker/Dockerfile.linux's image: in this host's Docker, or right here when already in it.
+    linux_build="set -euo pipefail
         git config --global --add safe.directory '*'
         bash tools/recompile.sh -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
         build=build/release-linux
@@ -122,6 +126,17 @@ linux)
         patchelf --set-rpath '\$ORIGIN' \$stage/MarioParty3Recompiled
         cp -r assets \$stage/
         tar -C out -czf \$stage.tar.gz $name-linux-x64"
+    if [ -f /.dockerenv ] && ! command -v docker > /dev/null; then
+        clean
+        bash -c "$linux_build"
+    else
+        setup
+        image=marioparty3-linux:$(sha256sum tools/docker/Dockerfile.linux | cut -c1-12)
+        mkdir -p build/home build/ccache
+        docker image inspect "$image" > /dev/null 2>&1 || docker build -t "$image" -f tools/docker/Dockerfile.linux tools/docker
+        docker run --rm -u "$(id -u):$(id -g)" -v "$ROOT:/src" -w /src -e CCACHE_DIR=/src/build/ccache -e HOME=/src/build/home \
+            "$image" bash -c "$linux_build"
+    fi
     echo "$commit" > "out/$name-linux-x64.tar.gz.commit"
     echo "out/$name-linux-x64.tar.gz ($(du -h "out/$name-linux-x64.tar.gz" | cut -f1))"
     ;;
