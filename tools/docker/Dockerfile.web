@@ -1,8 +1,7 @@
 # The image tools/build_web.sh builds the page in: perfect-dark-recomp's, which is rush-2049-recomp's (its
-# tools/docker/Dockerfile, the image N64Recomp-browser's tools/publish_pages.sh builds every page in), instruction for
-# instruction, so Docker's cache shares its layers. emsdk at the version N64Recomp-browser's CI uses, ninja, ccache,
-# clang with lld (N64Recomp and RSPRecomp natively, and patches/ for MIPS), naga 30.0.1 (WGSL from SPIR-V; dxc comes
-# with rt64) and spirv-opt.
+# tools/docker/Dockerfile, the image every game's page is built in), instruction for instruction, so Docker's cache
+# shares its layers. emsdk at the version N64Recomp-browser's CI uses, ninja, ccache, clang with lld (N64Recomp and
+# RSPRecomp natively, and patches/ for MIPS), naga 30.0.1 (WGSL from SPIR-V; dxc comes with rt64) and spirv-opt.
 # build_web.sh tags it with a hash of this file, so a change here makes the next run build a new one.
 FROM emscripten/emsdk:6.0.12
 RUN apt-get update && apt-get install -y --no-install-recommends ninja-build ccache clang lld git curl ca-certificates \
