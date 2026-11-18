@@ -33,12 +33,9 @@
 # the libSDL2 it was built with and libatomic (not on every system) beside the binary (RUNPATH $ORIGIN), as the Windows
 # zip carries SDL2.dll, and is a .tar.gz so the binary stays executable. GTK 3, FreeType and a Vulkan driver are the
 # system's.
-# With BUILD_HOST set (an ssh host with Docker) both archives build on that Linux host instead, and the Linux one boots
-# there: REMOTE_BUILD names rush-2049-recomp's tools/remote_build.sh, which runs each step in a container there (holding
-# a turn in the host's queue when it has one) in a copy of this commit kept between releases, release-<this folder's
-# name>, and brings back only the archives and the boot's captures. The Windows one is cross-built there (remote_build.sh
-# windows, a Release build in its tools/docker/Dockerfile.windows, which says how), the Linux one in
-# tools/docker/Dockerfile.linux as here. publish and boot windows stay on Windows, where the clone is.
+# Either build can come from elsewhere: with WINDOWS_BUILD naming a folder that holds a Release build of
+# MarioParty3Recompiled from this commit (a cross-build, say), windows packs that instead of building, and run inside a
+# container of tools/docker/Dockerfile.linux's image (where there is no Docker), linux builds right there.
 # Both hold assets/ (the launcher's), recompcontrollerdb.txt and LICENSE beside the program, which works from its own
 # folder when it is started from another (src/main/main.cpp).
 set -euo pipefail
@@ -84,21 +81,11 @@ setup() {
     clean
 }
 
-# The steps BUILD_HOST runs (the header), from a clean tree with the ROM, which the copy gets too.
-rb() {
-    [ -f roms/marioparty3.us.z64 ] || { echo "no roms/marioparty3.us.z64 (README, Building)" >&2; exit 1; }
-    [ -f "${REMOTE_BUILD:-}" ] || { echo "set REMOTE_BUILD to rush-2049-recomp's tools/remote_build.sh" >&2; exit 1; }
-    clean
-    bash "$REMOTE_BUILD" -C "$ROOT" -n "release-${ROOT##*/}" "$@"
-}
-
 case "${1:-}" in
 windows)
-    if [ -n "${BUILD_HOST:-}" ]; then
-        build=build/release-windows-cross
-        rb windows MarioParty3Recompiled -DCMAKE_BUILD_TYPE=Release
-        rm -rf "$build"
-        rb get build/xwin-windows "$build"
+    if [ -n "${WINDOWS_BUILD:-}" ]; then
+        build=$WINDOWS_BUILD
+        [ -f "$build/MarioParty3Recompiled.exe" ] || { echo "no $build/MarioParty3Recompiled.exe" >&2; exit 1; }
     else
         [ -n "${MIPS_CC:-}" ] && [ -n "${MIPS_LD:-}" ] || { echo "set MIPS_CC and MIPS_LD (README, Building)" >&2; exit 1; }
         setup
@@ -120,7 +107,7 @@ windows)
     echo "$stage.zip ($(du -h "$stage.zip" | cut -f1))"
     ;;
 linux)
-    # The build, in tools/docker/Dockerfile.linux's image: on BUILD_HOST (the header) or in this host's Docker.
+    # The build, in tools/docker/Dockerfile.linux's image: in this host's Docker, or right here when already in it.
     linux_build="set -euo pipefail
         git config --global --add safe.directory '*'
         bash tools/recompile.sh -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
@@ -139,10 +126,9 @@ linux)
         patchelf --set-rpath '\$ORIGIN' \$stage/MarioParty3Recompiled
         cp -r assets \$stage/
         tar -C out -czf \$stage.tar.gz $name-linux-x64"
-    if [ -n "${BUILD_HOST:-}" ]; then
-        rb -d tools/docker/Dockerfile.linux sync > /dev/null
-        rb -d tools/docker/Dockerfile.linux run "rm -rf out; $linux_build"
-        rb get out out
+    if [ -f /.dockerenv ] && ! command -v docker > /dev/null; then
+        clean
+        bash -c "$linux_build"
     else
         setup
         image=marioparty3-linux:$(sha256sum tools/docker/Dockerfile.linux | cut -c1-12)
@@ -165,22 +151,7 @@ boot)
         echo "set BOOT_RELEASE to the script that boots a release archive: <archive> <rom> <game id> <dir> [args...]" >&2
         exit 1
     }
-    if [ "$2" = linux ] && [ -n "${BUILD_HOST:-}" ]; then
-        # In the copy the archive was built in, inside the image $BOOT_RELEASE boots it in (its .Dockerfile), which
-        # has no Docker, so the script boots it right there. Its <archive>.booted comes back with the captures.
-        rb -d "${boot%.sh}.Dockerfile" run "mkdir -p ~/boot && cat > ~/boot/boot_release.sh << 'BOOT'
-$(cat "$boot")
-BOOT
-            bash ~/boot/boot_release.sh \"$archive\" roms/marioparty3.us.z64 marioparty3.n64.us.1.0 out/boot-linux ${*:3} &&
-            cp \"$archive.booted\" out/boot-linux/"
-        rm -rf out/boot-linux
-        rb get out/boot-linux out/boot-linux
-        mv out/boot-linux/"${archive##*/}.booted" "$archive.booted"
-        [ "$(cat "$archive.booted")" = "$(sha256sum "$archive" | cut -d' ' -f1)" ] ||
-            { rm "$archive.booted"; echo "$archive is not the archive BUILD_HOST booted" >&2; exit 1; }
-    else
-        bash "$boot" "$archive" roms/marioparty3.us.z64 marioparty3.n64.us.1.0 "out/boot-$2" "${@:3}"
-    fi
+    bash "$boot" "$archive" roms/marioparty3.us.z64 marioparty3.n64.us.1.0 "out/boot-$2" "${@:3}"
     ;;
 publish)
     case "${2:-}" in
