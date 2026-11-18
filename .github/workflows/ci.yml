@@ -39,11 +39,6 @@ jobs:
     env:
       SCCACHE_GHA_ENABLED: "true"
       ENGINE_REF: ${{ inputs.engine-ref }}
-      # The image's MSVC (14.52 from its 2026-11-16 update) refuses a clang older than 22 (STL1000), and its clang-cl
-      # is 20: clang-cl puts CL in front of every command line (_CL_ goes after it, where CMake's "-- <source>" makes it
-      # a file), so this lets the STL take it, cached builds' compiles included. A dash, not a slash: Git Bash steps
-      # take /D... for a path and rewrite it.
-      CL: -D_ALLOW_COMPILER_AND_STL_VERSION_MISMATCH
     steps:
       # Not actions/checkout: its cleanup walks every submodule the cache restored, ~15 s on Windows. Retried, as
       # actions/checkout retries its fetch.
@@ -108,6 +103,16 @@ jobs:
           ninjaVersion: "^1.13.0"
       - uses: mozilla-actions/sccache-action@v0.0.9
         id: sccache
+      # LLVM's own clang 22, the clang the Windows releases build with: the image's MSVC 14.52 (its 2026-11-16 update)
+      # takes no clang older than 22 (STL1000), and the image's own clang-cl is 20. Only bin and the compiler's own
+      # headers are unpacked, ~20 s.
+      - name: LLVM 22
+        run: |
+          curl.exe -fsSL --retry 3 -o "$env:RUNNER_TEMP\llvm.exe" `
+            https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-win64.exe
+          7z x -y -oC:\llvm22 "$env:RUNNER_TEMP\llvm.exe" bin lib\clang | Out-Null
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          "C:\llvm22\bin" | Out-File -Append -Encoding utf8 $env:GITHUB_PATH
       - name: Stand in for the ROM-generated sources
         shell: bash
         run: |
