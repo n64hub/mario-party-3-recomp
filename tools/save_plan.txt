@@ -1,0 +1,14 @@
+# The save run of the save check (N64Recomp-browser's tools/frame_dump.mjs --saves, with tools/load_plan.txt): Start
+# through the opening on a new save to file select (the screen, the overlay at 0x800CE200, 0x79), the d-pad right to
+# File 2 and A until the mode select (0x77): the game makes File 2's box and, as the file chosen, writes its slot (1)
+# into the system block's last-used file (0x800D09A9, which a blank EEPROM leaves 0xFF), seen in the block's buffer at
+# 0x800D0450 as it goes out. A blank EEPROM is formatted at boot, so saves/ has changed by then all the same: the load
+# run's check is what tells the save.
+0 until 0x800CE200 0xFFFFFFFF 0x79 120 Enter
+3 shot files
+4 key L 100
+5 until 0x800CE200 0xFFFFFFFF 0x77 60 Space
+6 until 0x800D0450 0x00FF0000 0x00010000 5
+6.5 saves changed 15
+7.5 shot modes
+8 end

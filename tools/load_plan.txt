@@ -1,0 +1,15 @@
+# The load run of the save check (N64Recomp-browser's tools/frame_dump.mjs --saves), after tools/save_plan.txt, the
+# program started again in the same folder: the game reads its EEPROM at boot, before the first overlay, and the system
+# block (0x800D09A8) then holds File 2 (1) as the last file, which a boot without that save never has (0xFF), and file
+# select starts on File 2. Nothing is written by then. Then File 1 is made and chosen, the d-pad left and A, which
+# writes the block again (0) through the check's links.
+0 until 0x800D09A8 0x00FF0000 0x00010000 30
+0.5 until 0x800CE200 0xFFFFFFFF 0x79 120 Enter
+2.5 shot files
+3 saves same
+4 key J 100
+5 until 0x800CE200 0xFFFFFFFF 0x77 60 Space
+6 until 0x800D0450 0x00FF0000 0x00000000 5
+6.5 saves changed 15
+7.5 shot modes
+8 end
