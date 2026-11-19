@@ -1,0 +1,24 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "Mario Party 3",
+  "system": "N64",
+  "type": "recomp",
+  "original": {
+    "region": "USA",
+    "sha1": "6beb80ff822b96bcf85dcdb512e8b2b7969d8259"
+  },
+  "project": "Mario Party 3: Recompiled",
+  "status": "released",
+  "targets": [
+    "Windows",
+    "Linux",
+    "Browser"
+  ],
+  "toolchain": "N64recomp",
+  "links": [
+    {
+      "label": "Play in a browser",
+      "url": "https://n64hub.com/mario-party-3/"
+    }
+  ]
+}
