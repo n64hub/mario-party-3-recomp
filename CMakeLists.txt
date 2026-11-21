@@ -118,6 +118,12 @@ set(RECOMPINPUT_PADS_IN_ORDER ON)
 # and Crazy Cogs' players and planks over the black. RT64_SCISSOR_INSIDE_FRAMEBUFFER, on with Emscripten and here
 # too, counts it only to the frame's edges.
 set(RT64_SCISSOR_INSIDE_FRAMEBUFFER ON)
+# Hand Line and Sinker's fishing line is the line microcode's G_LINE3D, which RT64 leaves out unless RT64_DRAW_LINES is
+# on (issue 104). Off by default, on here and on the page alike.
+set(RT64_DRAW_LINES ON)
+# The crowd's sprites (Slot Synch's Toads, Goombas, Koopas and Baby Bowsers) edged in their palette's transparent green
+# where filtered (issue 104): RT64_FILTER_BY_ALPHA leaves that colour out. Off by default, on here and on the page alike.
+set(RT64_FILTER_BY_ALPHA ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)
