@@ -99,6 +99,11 @@ Game, open Mods and press Install Mods, or drop the file onto the window, or put
 on in the Mods list. The page in a browser loads no mods. How to make one, and what a mod can change:
 [mario-party-engine's docs/mods.md](https://github.com/n64hub/mario-party-engine/blob/main/docs/mods.md).
 
+## Thanks
+
+Thanks to [jajdp](https://github.com/jajdp) and [91-cell](https://github.com/91-cell) for testing it and reporting
+what they found, from minigames and boards squeezed or stretched in a wide window to sprites and wipes drawn wrong.
+
 ## License
 
 GPL-3.0 (`LICENSE`), as the recompilations it follows. The decomp in `lib/marioparty3` is its own project.
