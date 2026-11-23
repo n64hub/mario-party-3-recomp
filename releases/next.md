@@ -1,1 +1,0 @@
-- In River Raiders, no thin dark line runs across the river where one stretch of it meets the next ([#104](https://github.com/n64hub/mario-party-3-recomp/issues/104)). The river is three pieces laid end to end, each a hair short of the next, and at a higher resolution the gap between them used to show.
