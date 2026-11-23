@@ -330,6 +330,24 @@ func = "func_80105FA0_river_raiders"
 before_vram = 0x80105FFC
 text = "ctx->f2.fl = 1873.5f;"
 
+# M.P.I.Q.'s stalks: under each player's cap, a number segment for each point, three of them 50 apart (at -44, 6 and 56,
+# func_80108178_mpiq, on a column below them), each grown to a height scale of 2 by 0.2 a frame once it is won
+# (func_80108494_mpiq). A segment's origin is at its bottom, and at that scale it is about 3 short of the next one, so
+# between the column and the numbers are gaps two thirds of a pixel deep at 320x240. The reference picture in #104 has
+# the stalks solid; in RT64 what is behind the stalk shows through the gaps as thin teal and green rings, whole lines
+# from 640x480 up and dashes at 320x240. Each segment is placed 5 lower and drawn 1.11 times as tall (its growth with
+# it), so it reaches down over the gap below it and its top, with the number under the cap, stays where the game puts
+# it: the stalk is solid white, as in that picture.
+[[patches.hook]]
+func = "func_80108178_mpiq"
+before_vram = 0x8010841C
+text = "ctx->f0.fl -= 5.0f;"
+
+[[patches.hook]]
+func = "func_80108494_mpiq"
+before_vram = 0x801084FC
+text = "ctx->f0.fl *= 1.11f;"
+
 # A model's part that hides what is behind it without showing (Ice Rink Risk's rink, under its picture drawn on the
 # screen behind it): func_8002A358_main gives such a material (flag 0x80000 of 0x800C9940) the render mode 0x005553F0,
 # which keeps the screen's colour but writes the depth. Its coverage is multiplied by its alpha (CVG_X_ALPHA), and its
