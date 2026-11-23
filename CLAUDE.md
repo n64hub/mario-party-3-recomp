@@ -38,7 +38,9 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   GitHub Releases with their notes in `releases/`.
 - The scope is the game as it plays, plus what a web page needs (RT64 interpolation to the display's rate, resolution
   Auto), plus modern enhancements: each an option with an Original value that plays as the console does, none
-  changing how the game plays. USA only.
+  changing how the game plays. USA only. Fixes to what the player sees are in scope too, and are no option: where the
+  game's own drawing shows badly in the recomp (a seam, a gap, a line that breaks up at some resolution), a patch makes
+  it look right, even when that changes what the game draws (River Raiders' river pieces, M.P.I.Q.'s stalk segments).
 - The code the Mario Party recomps share is `lib/mario-party-engine` (n64hub/mario-party-engine): the process
   scheduler's patches and natives, a camera's view, a board's background and its HUD past 4:3 and `gen_syms.py`,
   written once against this game's names in `patches/engine_names.h` (the HUD's against the addresses its `us.toml`
