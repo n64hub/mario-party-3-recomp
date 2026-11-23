@@ -313,6 +313,23 @@ func = "func_80108DE8_ridiculous_relay"
 before_vram = 0x801093F8
 text = "ctx->r9 &= ~(gpr)3;"
 
+# River Raiders' river is three models (0x2A0001-3), each placed 1875 down the river from the one before it: at 0, -1875
+# and -3750 (func_801060BC_river_raiders, from 0x8010D3C4), and each moved 17 towards the camera a frame and put back
+# 1875 behind the last once it is 1875 past the start (func_80105FA0_river_raiders). Each one's water is a unit short
+# of that, so between two of them is a gap a tenth of a pixel deep on the console's screen. The console puts a
+# vertex on a quarter of a pixel, so both edges land on the same row and the gap never shows; RT64 draws them where
+# they are, and at a higher resolution the gap is a darker row across the river, of what is behind it. The models are
+# placed 1873.5 apart instead, so each one's water reaches half a unit over the next one's.
+[[patches.hook]]
+func = "func_801060BC_river_raiders"
+before_vram = 0x8010610C
+text = "ctx->f0.fl *= 1873.5f / 1875.0f;"
+
+[[patches.hook]]
+func = "func_80105FA0_river_raiders"
+before_vram = 0x80105FFC
+text = "ctx->f2.fl = 1873.5f;"
+
 # A model's part that hides what is behind it without showing (Ice Rink Risk's rink, under its picture drawn on the
 # screen behind it): func_8002A358_main gives such a material (flag 0x80000 of 0x800C9940) the render mode 0x005553F0,
 # which keeps the screen's colour but writes the depth. Its coverage is multiplied by its alpha (CVG_X_ALPHA), and its
