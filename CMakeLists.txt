@@ -124,6 +124,11 @@ set(RT64_DRAW_LINES ON)
 # The crowd's sprites (Slot Synch's Toads, Goombas, Koopas and Baby Bowsers) edged in their palette's transparent green
 # where filtered (issue 104): RT64_FILTER_BY_ALPHA leaves that colour out. Off by default, on here and on the page alike.
 set(RT64_FILTER_BY_ALPHA ON)
+# A texrect the game moves is paired with its own in the game frame before and drawn between where it stood and where
+# it is in the frames between, as with Emscripten (RT64_INTERPOLATE_RECT_SCROLLS): without it the glove that points at
+# a file in the file select, one 32-pixel rect, slid to the next file 22 pixels a game frame, 30 steps a second, while
+# the stars behind it moved at the display's rate.
+set(RT64_INTERPOLATE_RECT_SCROLLS ON)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)
