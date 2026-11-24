@@ -222,13 +222,22 @@ jobs:
         with:
           path: ~/apt-archives
           key: ${{ steps.key.outputs.apt }}
+      # A stalled mirror connection once held apt-get update silent until the job's 90 minutes ran out. Now apt drops a
+      # connection silent for 30 s and retries the fetch, an update still stuck after 5 minutes is cut and run again, and
+      # the step itself stops at 15.
       - name: Install dependencies
+        timeout-minutes: 15
         run: |
           pkgs="clang lld libsdl2-dev libgtk-3-dev libfreetype-dev"
           if ls ~/apt-archives/*.deb > /dev/null 2>&1 && sudo dpkg -i ~/apt-archives/*.deb > /dev/null &&
               dpkg -s $pkgs > /dev/null; then exit 0; fi
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends $pkgs
+          apt="apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30"
+          for i in 1 2 3; do
+            sudo timeout 300 $apt update && break
+            [ $i = 3 ] && exit 1
+            echo "apt-get update attempt $i failed"; sleep $((i * 15))
+          done
+          sudo $apt install -y --no-install-recommends $pkgs
           mkdir -p ~/apt-archives && cp /var/cache/apt/archives/*.deb ~/apt-archives/
       # CMake 3.31: CMake 4 rejects the older submodules' cmake_minimum_required.
       - uses: lukka/get-cmake@latest
