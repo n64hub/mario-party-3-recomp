@@ -1,0 +1,455 @@
+{
+  "$schema": "https://recomplauncher.com/schema/recomplauncher.json",
+  "format": 1,
+  "name": "Mario Party 3: Recompiled",
+  "repo": "n64hub/mario-party-3-recomp",
+  "start": {
+    "program": [
+      "MarioParty3Recompiled.exe",
+      "MarioParty3Recompiled"
+    ]
+  },
+  "config": [
+    {
+      "id": "general",
+      "format": "json",
+      "file": [
+        {
+          "path": "{install}/general.json",
+          "if": "{install}/portable.txt"
+        },
+        {
+          "path": "{config}/MarioParty3Recompiled/general.json",
+          "if": "{install}/MarioParty3Recompiled"
+        },
+        {
+          "path": "{local}/MarioParty3Recompiled/general.json"
+        }
+      ]
+    },
+    {
+      "id": "graphics",
+      "format": "json",
+      "file": [
+        {
+          "path": "{install}/graphics.json",
+          "if": "{install}/portable.txt"
+        },
+        {
+          "path": "{config}/MarioParty3Recompiled/graphics.json",
+          "if": "{install}/MarioParty3Recompiled"
+        },
+        {
+          "path": "{local}/MarioParty3Recompiled/graphics.json"
+        }
+      ]
+    },
+    {
+      "id": "sound",
+      "format": "json",
+      "file": [
+        {
+          "path": "{install}/sound.json",
+          "if": "{install}/portable.txt"
+        },
+        {
+          "path": "{config}/MarioParty3Recompiled/sound.json",
+          "if": "{install}/MarioParty3Recompiled"
+        },
+        {
+          "path": "{local}/MarioParty3Recompiled/sound.json"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "id": "rumble_strength",
+      "label": "Rumble Strength",
+      "help": "Controls the strength of rumble when using a controller that supports it. Setting this to zero will disable rumble.",
+      "in": "general",
+      "group": "General",
+      "slider": {
+        "key": "rumble_strength",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "format": "%d"
+      },
+      "defaults": {
+        "rumble_strength": "25"
+      }
+    },
+    {
+      "id": "gyro_sensitivity",
+      "label": "Gyro Sensitivity",
+      "help": "Controls the sensitivity of gyro aiming when using items in first person for controllers that support it. Setting this to zero will disable gyro. Note: To recalibrate controller gyro, set the controller down on a still, flat surface for 5 seconds.",
+      "in": "general",
+      "group": "General",
+      "slider": {
+        "key": "gyro_sensitivity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "format": "%d"
+      },
+      "defaults": {
+        "gyro_sensitivity": "25"
+      }
+    },
+    {
+      "id": "mouse_sensitivity",
+      "label": "Mouse Sensitivity",
+      "help": "Controls the sensitivity of mouse aiming when using items in first person. Setting this to zero will disable mouse aiming. Note: This option does not allow mouse buttons to activate items. Mouse aiming is intended to be used with inputs that are mapped to mouse movement, such as gyro on Steam Deck.",
+      "in": "general",
+      "group": "General",
+      "slider": {
+        "key": "mouse_sensitivity",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "format": "%d"
+      },
+      "defaults": {
+        "mouse_sensitivity": "0"
+      }
+    },
+    {
+      "id": "joystick_deadzone",
+      "label": "Joystick Deadzone",
+      "help": "Applies a deadzone to joystick inputs.",
+      "in": "general",
+      "group": "General",
+      "slider": {
+        "key": "joystick_deadzone",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "format": "%d"
+      },
+      "defaults": {
+        "joystick_deadzone": "5"
+      }
+    },
+    {
+      "id": "background_input_mode",
+      "label": "Background Input Mode",
+      "help": "Allows the game to read controller input when out of focus. This setting does not affect keyboard input.",
+      "in": "general",
+      "group": "General",
+      "choices": [
+        {
+          "label": "Off",
+          "set": {
+            "background_input_mode": "\"Off\""
+          }
+        },
+        {
+          "label": "On",
+          "set": {
+            "background_input_mode": "\"On\""
+          }
+        }
+      ],
+      "defaults": {
+        "background_input_mode": "\"On\""
+      }
+    },
+    {
+      "id": "board_movement",
+      "label": "Board Movement",
+      "help": "How fast the players walk from space to space on a board. Fast: in half the time, as Mario Party 3's own Fast walking speed does, whatever the walking speed in a game's pause menu says. Original: as on the console.",
+      "in": "general",
+      "group": "General",
+      "choices": [
+        {
+          "label": "Original",
+          "set": {
+            "board_movement": "\"Original\""
+          }
+        },
+        {
+          "label": "Fast",
+          "set": {
+            "board_movement": "\"Fast\""
+          }
+        }
+      ],
+      "defaults": {
+        "board_movement": "\"Original\""
+      }
+    },
+    {
+      "id": "map_scrolling",
+      "label": "Map Scrolling",
+      "help": "How fast the view moves when you look around a board's map. Fast: twice as fast. Original: as on the console.",
+      "in": "general",
+      "group": "General",
+      "choices": [
+        {
+          "label": "Original",
+          "set": {
+            "map_scrolling": "\"Original\""
+          }
+        },
+        {
+          "label": "Fast",
+          "set": {
+            "map_scrolling": "\"Fast\""
+          }
+        }
+      ],
+      "defaults": {
+        "map_scrolling": "\"Original\""
+      }
+    },
+    {
+      "id": "res_option",
+      "label": "Resolution",
+      "help": "Sets the output resolution of the game. Original matches the game's original 240p resolution. Original 2x will render at 480p. Auto will scale based on the game window's resolution.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "Original",
+          "set": {
+            "res_option": "\"Original\""
+          }
+        },
+        {
+          "label": "Original 2x",
+          "set": {
+            "res_option": "\"Original2x\""
+          }
+        },
+        {
+          "label": "Auto",
+          "set": {
+            "res_option": "\"Auto\""
+          }
+        }
+      ],
+      "defaults": {
+        "res_option": "\"Auto\""
+      }
+    },
+    {
+      "id": "ds_option",
+      "label": "Downsampling Quality",
+      "help": "Renders at a higher resolution and scales it down to the output resolution for increased quality. Only available in Original and Original 2x resolution. Note: 4x downsampling quality at Original 2x resolution may cause performance issues on low end devices, as it will cause the game to render at almost 4k internal resolution.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "Off",
+          "set": {
+            "ds_option": "0"
+          }
+        },
+        {
+          "label": "2x",
+          "set": {
+            "ds_option": "2"
+          }
+        },
+        {
+          "label": "4x",
+          "set": {
+            "ds_option": "4"
+          }
+        }
+      ],
+      "defaults": {
+        "ds_option": "0"
+      }
+    },
+    {
+      "id": "ar_option",
+      "label": "Aspect Ratio",
+      "help": "Sets the horizontal aspect ratio. Original uses the game's original 4:3 aspect ratio. Expand will adjust to match the game window's aspect ratio.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "Original",
+          "set": {
+            "ar_option": "\"Original\""
+          }
+        },
+        {
+          "label": "Expand",
+          "set": {
+            "ar_option": "\"Expand\""
+          }
+        }
+      ],
+      "defaults": {
+        "ar_option": "\"Expand\""
+      }
+    },
+    {
+      "id": "wm_option",
+      "label": "Window Mode",
+      "help": "Sets whether the game should display Windowed or Fullscreen. You can also use F11 or Alt + Enter to toggle this option.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "Windowed",
+          "set": {
+            "wm_option": "\"Windowed\""
+          }
+        },
+        {
+          "label": "Fullscreen",
+          "set": {
+            "wm_option": "\"Fullscreen\""
+          }
+        }
+      ],
+      "defaults": {
+        "wm_option": "\"Windowed\""
+      }
+    },
+    {
+      "id": "rr_option",
+      "label": "Framerate",
+      "help": "Sets the game's output framerate. This option does not affect gameplay. Note: If you have issues with Display mode while using an external frame limiter, use Manual mode instead and configure it to that same frame limit.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "Original",
+          "set": {
+            "rr_option": "\"Original\""
+          }
+        },
+        {
+          "label": "Display",
+          "set": {
+            "rr_option": "\"Display\""
+          }
+        },
+        {
+          "label": "Manual",
+          "set": {
+            "rr_option": "\"Manual\""
+          }
+        }
+      ],
+      "defaults": {
+        "rr_option": "\"Display\""
+      }
+    },
+    {
+      "id": "rr_manual_value",
+      "label": "Manual Framerate",
+      "help": "The framerate Manual draws the game at. This option does not affect gameplay.",
+      "in": "graphics",
+      "group": "Graphics",
+      "slider": {
+        "key": "rr_manual_value",
+        "min": 20,
+        "max": 240,
+        "step": 1,
+        "format": "%d"
+      },
+      "defaults": {
+        "rr_manual_value": "60"
+      },
+      "when": {
+        "rr_option": "\"Manual\""
+      }
+    },
+    {
+      "id": "msaa_option",
+      "label": "MS Anti-Aliasing",
+      "help": "Sets the multisample anti-aliasing (MSAA) quality level. This reduces jagged edges in the final image at the expense of rendering performance. Note: This option won't be available if your GPU does not support programmable MSAA sample positions, as it is currently required to avoid rendering glitches.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "None",
+          "set": {
+            "msaa_option": "\"None\""
+          }
+        },
+        {
+          "label": "2X",
+          "set": {
+            "msaa_option": "\"MSAA2X\""
+          }
+        },
+        {
+          "label": "4X",
+          "set": {
+            "msaa_option": "\"MSAA4X\""
+          }
+        }
+      ],
+      "defaults": {
+        "msaa_option": "\"MSAA2X\""
+      }
+    },
+    {
+      "id": "hr_option",
+      "label": "HUD Placement",
+      "help": "Adjusts the placement of HUD elements to fit the selected aspect ratio. Expand will use the aspect ratio of the game's output window.",
+      "in": "graphics",
+      "group": "Graphics",
+      "choices": [
+        {
+          "label": "Original",
+          "set": {
+            "hr_option": "\"Original\""
+          }
+        },
+        {
+          "label": "16:9",
+          "set": {
+            "hr_option": "\"Clamp16x9\""
+          }
+        },
+        {
+          "label": "Expand",
+          "set": {
+            "hr_option": "\"Expand\""
+          }
+        }
+      ],
+      "defaults": {
+        "hr_option": "\"Clamp16x9\""
+      }
+    },
+    {
+      "id": "main_volume",
+      "label": "Main Volume",
+      "help": "Controls the main volume of the game.",
+      "in": "sound",
+      "group": "Sound",
+      "slider": {
+        "key": "main_volume",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "format": "%d"
+      },
+      "defaults": {
+        "main_volume": "100"
+      }
+    }
+  ],
+  "saves": [
+    "{install}/saves",
+    "{config}/MarioParty3Recompiled/saves",
+    "{local}/MarioParty3Recompiled/saves"
+  ],
+  "system": {
+    "windows": {
+      "version": "10"
+    },
+    "linux": {
+      "glibc": "2.35"
+    }
+  }
+}
