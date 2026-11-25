@@ -213,6 +213,22 @@ func = "func_800250D4_main"
 before_vram = 0x800255C0
 text = "{ void mp_model_pop(uint8_t*, gpr); mp_model_pop(rdram, (gpr)(int32_t)0x800D1FF4); }"
 
+# A 3D model's texture clamped where its triangles' part of it ends (lib/mario-party-engine/src/model_tiles.cpp says
+# why: a texture that is a sheet of pictures stacked one under another showed a thin line of the picture under a
+# model's under it, above the console's resolution). func_800260F0_main writes a batch of a model part's triangles as
+# the model is made, after the texture they are drawn with if it is another: at its start and before its last store
+# (0x80029F74, the batch's first vertex, a s16 at 0x800CDD66, not yet one past its last, at 0x800CE1CE). It writes at
+# the Gfx* at 0x800D1FF4, the part's Vtx are at the pointer at 0x800D5308, and the texture its tile holds at 0x800D0440.
+[[patches.hook]]
+func = "func_800260F0_main"
+before_vram = 0x800260F0
+text = "{ void mp_model_batch_start(uint8_t*, gpr, gpr); mp_model_batch_start(rdram, (gpr)(int32_t)0x800D1FF4, (gpr)(int32_t)0x800D0440); }"
+
+[[patches.hook]]
+func = "func_800260F0_main"
+before_vram = 0x80029F74
+text = "{ void mp_model_batch_end(uint8_t*, gpr, gpr, gpr, gpr, gpr); mp_model_batch_end(rdram, (gpr)(int32_t)0x800D1FF4, (gpr)(int32_t)0x800D5308, (gpr)(int32_t)0x800CDD66, (gpr)(int32_t)0x800CE1CE, (gpr)(int32_t)0x800D0440); }"
+
 # A 4:3 picture's sides black (lib/mario-party-engine/src/wipe.cpp, mp_wipe_picture_sides): func_8001B0B4_main ends
 # the frame's last display list after its wipe and its text, the list's next command in v0, with its gDPFullSync.
 [[patches.hook]]
