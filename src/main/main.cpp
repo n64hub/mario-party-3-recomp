@@ -59,7 +59,7 @@
 
 #include "icon_bytes.h"
 #include "launcher_background_bytes.h"
-#include "launcher_background.h"
+#include "../../lib/mario-party-engine/src/launcher_background.h"
 #if defined(__linux__)
 #include "window_icon_bmp.h"
 #endif
