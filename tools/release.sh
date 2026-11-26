@@ -36,8 +36,8 @@
 # Either build can come from elsewhere: with WINDOWS_BUILD naming a folder that holds a Release build of
 # MarioParty3Recompiled from this commit (a cross-build, say), windows packs that instead of building, and run inside a
 # container of tools/docker/Dockerfile.linux's image (where there is no Docker), linux builds right there.
-# Both hold assets/ (the launcher's), recompcontrollerdb.txt and LICENSE beside the program, which works from its own
-# folder when it is started from another (src/main/main.cpp).
+# Both hold assets/ (the launcher's), recompcontrollerdb.txt, recomplauncher.json and LICENSE beside the program, which
+# works from its own folder when it is started from another (src/main/main.cpp).
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
@@ -99,7 +99,7 @@ windows)
     stage="out/$name-windows-x64"
     rm -rf "$stage" "$stage.zip"
     mkdir -p "$stage"
-    cp "$build"/{MarioParty3Recompiled.exe,SDL2.dll,dxil.dll,dxcompiler.dll} recompcontrollerdb.txt LICENSE "$stage"/
+    cp "$build"/{MarioParty3Recompiled.exe,SDL2.dll,dxil.dll,dxcompiler.dll} recompcontrollerdb.txt recomplauncher.json LICENSE "$stage"/
     cp -r assets "$stage"/
     # CMake's own zip, so packing needs nothing the build doesn't.
     (cd out && cmake -E tar cf "$name-windows-x64.zip" --format=zip "$name-windows-x64")
@@ -121,7 +121,7 @@ linux)
         stage=out/$name-linux-x64
         rm -rf \$stage \$stage.tar.gz
         mkdir -p \$stage
-        cp \$build/MarioParty3Recompiled recompcontrollerdb.txt LICENSE \$stage/
+        cp \$build/MarioParty3Recompiled recompcontrollerdb.txt recomplauncher.json LICENSE \$stage/
         cp -L /usr/local/lib/libSDL2-2.0.so.0 /usr/lib/x86_64-linux-gnu/libatomic.so.1 \$stage/
         patchelf --set-rpath '\$ORIGIN' \$stage/MarioParty3Recompiled
         cp -r assets \$stage/
