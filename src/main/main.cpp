@@ -1,5 +1,6 @@
 // Mario Party 3: Recompiled on RecompFrontend: its launcher (Load ROM, Start Game), settings menus, input and RT64
-// render context. The natives the patches call are recomp_api.cpp, the settings config.cpp.
+// render context, with the picture behind the launcher's menu (lib/mario-party-engine's launcher_background.cpp). The
+// natives the patches call are recomp_api.cpp, the settings config.cpp.
 
 #include <cstdio>
 #include <cstring>
@@ -57,6 +58,8 @@
 #endif
 
 #include "icon_bytes.h"
+#include "launcher_background_bytes.h"
+#include "../../lib/mario-party-engine/src/launcher_background.h"
 #if defined(__linux__)
 #include "window_icon_bmp.h"
 #endif
@@ -418,6 +421,7 @@ void on_launcher_init(recompui::LauncherMenu* menu) {
     const recomp::GameEntry& game = supported_games[0];
     auto game_options_menu = menu->init_game_options_menu(game.game_id, game.mod_game_id, game.display_name, game.thumbnail_bytes);
     game_options_menu->add_default_options();
+    mp_launcher_background::set(menu, std::span<const char>(launcher_background_bytes));
 }
 
 void enable_texture_pack(recomp::mods::ModContext& context, const recomp::mods::ModHandle& mod) {
