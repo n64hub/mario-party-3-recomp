@@ -251,6 +251,7 @@ target_sources(MarioParty3Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/aspect_ratio.cpp
     ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/board_options.cpp
     ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/model_ids.cpp
+    ${CMAKE_SOURCE_DIR}/lib/mario-party-engine/src/launcher_background.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
     ${CMAKE_SOURCE_DIR}/src/game/survey.cpp
     ${CMAKE_SOURCE_DIR}/src/game/camera_list.cpp
@@ -290,6 +291,15 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/icon_bytes.c ${CMAKE_CURRE
 )
 
 target_sources(MarioParty3Recompiled PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/icon_bytes.c)
+
+# The picture behind the launcher's menu (icons/launcher_background.jpg), made for the project by a player: no art from
+# the game. Built in, so the web page needs no file beside it.
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/launcher_background_bytes.c ${CMAKE_CURRENT_BINARY_DIR}/launcher_background_bytes.h
+    COMMAND file_to_c ${CMAKE_SOURCE_DIR}/icons/launcher_background.jpg launcher_background_bytes ${CMAKE_CURRENT_BINARY_DIR}/launcher_background_bytes.c ${CMAKE_CURRENT_BINARY_DIR}/launcher_background_bytes.h
+    DEPENDS ${CMAKE_SOURCE_DIR}/icons/launcher_background.jpg
+)
+
+target_sources(MarioParty3Recompiled PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/launcher_background_bytes.c)
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
     target_compile_options(MarioParty3Recompiled PRIVATE

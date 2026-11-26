@@ -142,8 +142,10 @@ jobs:
             echo "attempt $i failed"
           done
           exit 1
+      # Through tools/ci/ninja.sh: a compile whose connect to that server failed with os error 10048 is run again.
       - name: Build runtime, renderer and frontend libraries
-        run: ninja -C build librecomp ultramodern rt64 recompui recompinput nfd
+        shell: bash
+        run: bash tools/ci/ninja.sh -C build librecomp ultramodern rt64 recompui recompinput nfd
       - name: Compile the game's own sources
         shell: bash
         run: |
@@ -151,7 +153,7 @@ jobs:
             grep -oE '^CMakeFiles/MarioParty3Recompiled\.dir/[^:]+\.obj' | grep -v register_overlays)
           [ -n "$objs" ] || { echo "no object targets found"; exit 1; }
           echo "$objs"
-          ninja -C build $objs
+          bash tools/ci/ninja.sh -C build $objs
       - name: sccache stats
         if: always() && steps.sccache.outcome == 'success'
         run: sccache --show-stats
