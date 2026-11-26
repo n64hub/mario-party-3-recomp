@@ -7,8 +7,10 @@
 # through the party's setup (one player and three computer players) and the board's opening onto Chilly Waters, its
 # first turns (A rolls player 1's dice), the minigame's instructions, Start to play it, the minigame on random input (A
 # and the stick), its results, and the board again until the time is up: the board from about 105 s, the minigame from
-# about 200 s to 230 s. Start is pressed 5 s and 8 s after the instructions come up: sooner, it lands while they fade
-# in and is lost, and A doesn't leave them. Duel Map's board, the Mini-Game Room and Story mode aren't in the round.
+# about 180 s to 230 s: the board's first turns take 70 s to 120 s, by what the dice and the computer players do, so
+# the plan waits up to 180 s for the instructions (120 s ran out in 7 of 76 rounds). Start is pressed 5 s and 8 s after
+# the instructions come up: sooner, it lands while they fade in and is lost, and A doesn't leave them. Duel Map's
+# board, the Mini-Game Room and Story mode aren't in the round.
 # Which screen is up is the overlay omOvlGotoEx last went to, omovl (0x800CE200): the file select 0x79, the mode select
 # 0x77, the setup 0x78, boardcall 0x47 and the board's opening 0x53, the boards 0x48 (Chilly Waters) to 0x4E, a
 # minigame's instructions 0x70, the minigames 0x01 to 0x46, their results 0x71. The mode select's glove is a word of its
@@ -24,7 +26,7 @@
 18 random Space
 19 until 0x800CE200 0xFFFFFFFF 0x48 150 Space
 20 shot board
-20 until 0x800CE200 0xFFFFFFFF 0x70 120 Space
+20 until 0x800CE200 0xFFFFFFFF 0x70 180 Space
 21 shot instructions
 25 key Enter
 28 key Enter
