@@ -133,12 +133,15 @@ RECOMP_PATCH void func_8002AF40_main(void) {
 //   moved out from under them.
 // - 0x4F, a board's results on the star stage: its sky is a 2D picture of the screen's size, and the stage's 3D past
 //   4:3, confetti-covered, was drawn beside it over the black.
+// - 0x58, the boot logos: the Nintendo 64, Nintendo and Hudson Soft logos before the opening are each a 2D picture of
+//   the screen's size, drawn in its middle over black. Stretched over a wide window, each logo was drawn as much wider
+//   as the window is.
 // - 0x7A, the opening and the title: the story's pictures and the title's, its logo and the characters, are 2D pictures
 //   of the screen's size. Stretched over a wide window, the title's logo and characters were drawn as much wider as the
 //   window is.
 static const u8 overlays_4x3[] = { 0x05, 0x06, 0x07, 0x08, 0x09, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x12, 0x13,
                                    0x14, 0x16, 0x17, 0x1D, 0x1E, 0x25, 0x27, 0x28, 0x2A, 0x2B, 0x30, 0x31, 0x32, 0x33,
-                                   0x34, 0x35, 0x36, 0x38, 0x39, 0x3A, 0x3B, 0x3D, 0x3E, 0x42, 0x43, 0x45, 0x4F, 0x7A };
+                                   0x34, 0x35, 0x36, 0x38, 0x39, 0x3A, 0x3B, 0x3D, 0x3E, 0x42, 0x43, 0x45, 0x4F, 0x58, 0x7A };
 
 // The minigames whose 3D ends short of a wide window's edges, and the widest each is drawn, its width over its height:
 // where its stage ends at its narrowest across the minigame's play, at a 32:9 window. The engine draws one to the
