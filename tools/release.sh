@@ -15,9 +15,9 @@
 # moves releases/next.md to releases/v<version>.md: what a player gets, not a list of merged PRs. The tag is
 # v<version_string>. Both builds and the publish run on that PR's merge commit, checked out with a clean tree: each
 # build moves the submodules onto their pins (unpatch, below), refuses a tree with changes and records the commit it was
-# built from (out/<archive>.commit), and publish refuses archives from another one or that haven't booted (boot), a tree
-# with changes, a commit not on origin/main or still holding releases/next.md, or a tag that exists. A change merged
-# meanwhile goes in the next release and doesn't stop this one.
+# built from (out/<archive>.commit), and publish refuses archives from another one, a Linux archive that hasn't booted
+# or a Windows zip whose boot doesn't match it (boot), a tree with changes, a commit not on origin/main or still holding
+# releases/next.md, or a tag that exists. A change merged meanwhile goes in the next release and doesn't stop this one.
 #
 # Windows: Release (CMakeLists.txt makes that a windowed program, with no console), the DLLs beside the exe as the
 # build leaves them (SDL2, dxcompiler, dxil). It needs the Visual C++ 2015-2022 redistributable (x64). clang-cl, CMake
@@ -28,7 +28,8 @@
 # what changed builds, the shaders included (tools/recompile.sh keeps the times of the files that come out the same).
 # boot runs $BOOT_RELEASE on the archive, which unpacks it into a new folder with the ROM stored as Load ROM stores it,
 # runs it with --boot (and any arguments after the OS) for 30 s with its own window captured, and writes the
-# <archive>.booted publish asks for.
+# <archive>.booted publish asks for. Publish needs the Linux archive's; the Windows zip's boot is optional, since no
+# release's Windows boot has caught anything the Linux boot didn't, but a .booted beside the zip must match it.
 # Linux: in the image tools/docker/Dockerfile.linux, Ubuntu 22.04, so the binary needs glibc 2.35 or newer. It carries
 # the libSDL2 it was built with and libatomic (not on every system) beside the binary (RUNPATH $ORIGIN), as the Windows
 # zip carries SDL2.dll, and is a .tar.gz so the binary stays executable. GTK 3, FreeType and a Vulkan driver are the
@@ -170,8 +171,9 @@ publish)
     for f in "${files[@]}"; do
         [ -f "$f" ] || { echo "no $f: run tools/release.sh windows and linux first" >&2; exit 1; }
         [ "$(cat "$f.commit" 2> /dev/null)" = "$commit" ] || { echo "$f wasn't built from $commit" >&2; exit 1; }
+        [ "$f" != "out/$name-windows-x64.zip" ] || [ -e "$f.booted" ] || continue  # its boot is optional (above)
         [ "$(cat "$f.booted" 2> /dev/null)" = "$(sha256sum "$f" | cut -d' ' -f1)" ] ||
-            { echo "$f hasn't booted: run tools/release.sh boot windows and linux first" >&2; exit 1; }
+            { echo "$f hasn't booted as it is now: run tools/release.sh boot on its OS first" >&2; exit 1; }
     done
     gh release create "$tag" "${files[@]}" --target "$commit" --title "Mario Party 3: Recompiled $tag" \
         --notes-file "$notes" "${kind[@]}"
