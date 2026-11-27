@@ -172,7 +172,26 @@ static const ShortScene short_scenes[] = {
     { 0x22, 2.85f }, { 0x26, 1.8f },  { 0x3F, 1.65f }, { 0x41, 3.25f }, { 0x46, 2.4f },
 };
 
+// The scenes drawn at 4:3 that show something wrong in the screen's outermost lines or columns, which a TV's overscan
+// hid, and how many of each the engine draws black with the picture's sides (recomp_picture_overscan): top, bottom,
+// left, right.
+// - 0x0F, Picking Panic: the red and yellow stripe between the teams' halves goes up to the screen's top line and down
+//   to its bottom one as the halves join for the winners, and stays on the last two lines under them.
+// - 0x25, Awful Tower: the rightmost quarter (the fourth player's) shows another picture in the screen's last two
+//   columns, beside its tower's backdrop.
+typedef struct {
+    u8 overlay;
+    u8 edges[4];
+} OverscanScene;
+
+static const OverscanScene overscan_scenes[] = {
+    { 0x0F, { 2, 2, 0, 0 } },
+    { 0x25, { 0, 0, 0, 2 } },
+};
+
 void widescreen_overlay(s32 overlay) {
+    static const u8 none[4] = { 0, 0, 0, 0 };
+    const u8* edges = none;
     f32 widest = 0.0f;
     u32 i;
 
@@ -186,5 +205,11 @@ void widescreen_overlay(s32 overlay) {
             widest = short_scenes[i].widest;
         }
     }
+    for (i = 0; i < sizeof(overscan_scenes) / sizeof(overscan_scenes[0]); i++) {
+        if (overscan_scenes[i].overlay == overlay) {
+            edges = overscan_scenes[i].edges;
+        }
+    }
     board_back_scene_widest(widest);
+    recomp_picture_overscan(edges[0], edges[1], edges[2], edges[3]);
 }
