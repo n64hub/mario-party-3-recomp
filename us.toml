@@ -135,10 +135,10 @@ text = "{ void mp_hud_hand_group(uint8_t*, gpr); mp_hud_hand_group(rdram, (gpr)(
 # A screen wipe past 4:3 (lib/mario-party-engine/src/wipe.cpp says how): the wipe module's whole-screen rectangle
 # (func_8006231C_main(gfx, alpha), out through 0x800623E8), and a shape wipe's rectangles around its square
 # (func_800636D8_main, with gfx in t0, from 0x80063F68, where it has set their colour).
-# This game's star (type 2, func_800641C8_main) draws six square rings of 32 pixels round the screen's centre, the
-# mask's texture rectangles then the colour's fill rectangles, each ring's alpha higher than the one inside it; the
-# outermost ring, the columns at 4:3's left and right edges, is drawn last, so the sides take its colour at its end
-# (0x8006508C, gfx in t0). Its stripes (types 0 and 3 to 0xA, func_800651F0_main) need nothing: each band's black is
+# This game's star grid (type 2, func_800641C8_main(gfx, progress)) draws six square rings of 32 pixels round the
+# screen's centre twice, the star mask's texture rectangles then the colour's fill rectangles, each ring's alpha higher
+# than the one inside it, the outermost the columns at 4:3's left and right edges: its rings go on past 4:3 where its
+# star pass ends (0x80064C9C, gfx in t0, the progress still in f10) and where its colour pass ends (0x8006508C). Its stripes (types 0 and 3 to 0xA, func_800651F0_main) need nothing: each band's black is
 # a fill rectangle of the screen's whole width, which reaches the window's edges as it is.
 [[patches.hook]]
 func = "func_8006231C_main"
@@ -170,8 +170,13 @@ text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
 
 [[patches.hook]]
 func = "func_800641C8_main"
+before_vram = 0x80064C9C
+text = "{ void mp_wipe_star_stars(uint8_t*, gpr, gpr); mp_wipe_star_stars(rdram, ctx->r8, (gpr)(int32_t)ctx->f10.u32l); }"
+
+[[patches.hook]]
+func = "func_800641C8_main"
 before_vram = 0x8006508C
-text = "{ void mp_wipe_sides(uint8_t*, gpr); mp_wipe_sides(rdram, ctx->r8); }"
+text = "{ void mp_wipe_star_colour(uint8_t*, gpr); mp_wipe_star_colour(rdram, ctx->r8); }"
 
 # The camera's list func_8001B0B4_main writes for the models on a board, ended by its scissor's patch
 # (patches/widescreen.c): its first call of func_800127C4_main, marked for the patch (src/game/camera_list.cpp).
