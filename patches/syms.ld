@@ -13,3 +13,4 @@ recomp_survey_register = 0x8F00001C;
 recomp_hud_widest = 0x8F000020;
 mp_aspect_ratio = 0x8F000024;
 recomp_camera_list_ends = 0x8F000028;
+recomp_picture_overscan = 0x8F00002C;
